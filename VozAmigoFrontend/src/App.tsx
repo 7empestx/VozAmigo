@@ -15,7 +15,11 @@ import { DashboardSideNavigation } from './components/side-navigation';
 import { Breadcrumbs, Notifications, HelpPanelProvider } from './commons';
 import {
   BaseStaticWidget,
-  clientsCultivated,
+  personalizedLearningPath,
+  interactiveExercises,
+  realWorldScenarios,
+  adaptiveFeedback,
+  culturalImmersion,
 } from './widgets';
 
 function Content() {
@@ -23,10 +27,18 @@ function Content() {
     <Grid
       gridDefinition={[
         { colspan: { l: 12, m: 12, default: 12 } },
+        { colspan: { l: 12, m: 12, default: 12 } },
+        { colspan: { l: 12, m: 12, default: 12 } },
+        { colspan: { l: 12, m: 12, default: 12 } },
+        { colspan: { l: 12, m: 12, default: 12 } },
       ]}
     >
       {[
-        clientsCultivated,
+        personalizedLearningPath,
+        interactiveExercises,
+        realWorldScenarios,
+        adaptiveFeedback,
+        culturalImmersion,
       ].map((widget, index) => (
         <BaseStaticWidget key={index} config={widget.data} />
       ))}
@@ -50,7 +62,7 @@ export default function App() {
       <CustomAppLayout
         ref={appLayout}
         content={
-          <ContentLayout header={<DashboardHeader actions={<Button variant="primary">Purchase Client</Button>} />}>
+          <ContentLayout header={<DashboardHeader actions={<Button variant="primary">Support Voz Amigo</Button>} />}>
             <Content />
           </ContentLayout>
         }

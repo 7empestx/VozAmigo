@@ -14,8 +14,8 @@ if [ "$operation_type" = "post" ]; then
   "name": "John Doe",
   "email": "john.doe@example.com",
   "phone": "123-456-7890",
-  "state": "Utah",
-  "business": "SolarPanelSolutions"
+  "state": "",
+  "business": ""
 }
 EOF
     )

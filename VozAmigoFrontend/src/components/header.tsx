@@ -5,7 +5,7 @@ import { ExternalLinkGroup, InfoLink, useHelpPanel } from '../commons';
 export function DashboardMainInfo() {
   return (
     <HelpPanel
-      header={<h2>Client Cultivator</h2>}
+      header={<h2>Voz Amigo</h2>}
       footer={
         <ExternalLinkGroup
           items={[
@@ -19,7 +19,7 @@ export function DashboardMainInfo() {
       }
     >
       <p>
-        Client Cultivator is a service that helps you to cultivate your clients.
+        Revolutionize your Spanish learning journey with our innovative application designed to provide personalized and interactive language experiences. Leveraging advanced AI, the AI-Powered Language Learning Companion adapts to your learning pace, offering tailored lessons, real-world scenarios, and instant feedback to ensure effective and enjoyable learning. Embark on a seamless blend of technology and language education to achieve fluency faster and more efficiently.
       </p>
     </HelpPanel>
   );
@@ -33,7 +33,7 @@ export function DashboardHeader({ actions }: { actions: React.ReactNode }) {
       info={<InfoLink onFollow={() => loadHelpPanelContent(<DashboardMainInfo />)} />}
       actions={actions}
     >
-     Client Cultivator
+     Voz Amigo
     </Header>
   );
 }

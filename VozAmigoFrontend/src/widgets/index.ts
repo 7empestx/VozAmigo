@@ -1,15 +1,9 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 export { BaseStaticWidget } from './base-static-widget';
-export { accountAttributes } from './account-attributes';
-export { alarms } from './alarms';
-export { events } from './events';
-export { featuresSpotlight } from './features-spotlight';
-export { instanceLimits } from './instance-limits';
-export { instanceHours } from './instance-hours';
-export { networkTraffic } from './network-traffic';
-export { operationalMetrics } from './operational-metrics';
-export { serviceHealth } from './service-health';
-export { serviceOverview } from './service-overview';
-export { zoneStatus } from './zone-status';
-export { clientsCultivated } from './clients-cultivated';
+export { personalizedLearningPath } from './personalized-learning-path';
+export { interactiveExercises } from './interactive-exercises';
+export { adaptiveFeedback } from './adaptive-feedback';
+export { culturalImmersion } from './cultural-immersion';
+export { realWorldScenarios } from './real-world-scenarios';
+

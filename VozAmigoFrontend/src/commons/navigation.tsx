@@ -3,7 +3,7 @@
 import React from 'react';
 import SideNavigation, { SideNavigationProps } from '@cloudscape-design/components/side-navigation';
 
-const navHeader = { text: 'Client Cultivator', href: '#/' };
+const navHeader = { text: 'Voz Amigo', href: '#/' };
 export const navItems: SideNavigationProps['items'] = [
   {
     type: 'section',

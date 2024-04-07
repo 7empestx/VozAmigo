@@ -18,17 +18,11 @@ then
     exit 1
 fi
 
-echo "Building the ClientCultivatorFrontend application..."
-cd ClientCultivatorFrontend
+echo "Building the VozAmigoFrontend application..."
+cd VozAmigoFrontend
 npm ci
 npm run build
-echo "ClientCultivator application built successfully."
-cd ..
-
-echo "Building the Solar Panel front-end application..."
-cd SolarPanelSolutions
-npm run build
-echo "Front-end application built successfully."
+echo "VozAmigoFrontend application built successfully."
 cd ..
 
 echo "Building the Lambda function..."
