@@ -3,8 +3,8 @@
 # Ask the user for the type of operation
 read -p "Enter the type of operation (get or post): " operation_type
 
-API_ENDPOINT="https://api.clientcultivator.biz/lead"
-API_KEY="YsTDWpTnms79cPnelNqJY6KLj6cSl0B86fW6xOLH"
+API_ENDPOINT=""
+API_KEY=""
 CONTENT_TYPE="application/json"
 
 if [ "$operation_type" = "post" ]; then
