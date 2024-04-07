@@ -1,0 +1,109 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 40px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+}
+
+.modal-header {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 30px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+  color: #666;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 15px 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 18px;
+  color: #333;
+}
+
+.form-group input:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+  outline: none;
+}
+
+.submit-btn {
+  width: calc(100% - 40px); /* Subtracting padding */
+  padding: 18px 0;
+  margin: 0 20px; /* Align with the input padding */
+  background-color: #007bff; /* This is your original color for hover state */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  text-transform: uppercase;
+  transition:
+    background-color 0.3s ease,
+    transform 0.1s ease;
+  display: inline-block; /* Ensure it doesn't collapse in width */
+}
+
+.submit-btn:not(:hover) {
+  background-color: #009bff; /* Slightly lighter blue for visibility */
+}
+
+.submit-btn:hover {
+  background-color: #0056b3; /* Original hover color */
+  transform: scale(1.05); /* Slight increase in size */
+}
+
+.close-btn {
+  background-color: transparent;
+  color: #aaa;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 24px;
+  transition: background-color 0.3s ease;
+  display: block; /* Make the button a block to fill width */
+  text-align: center; /* Center the text for block level buttons */
+  margin-top: 20px;
+}
+
+.close-btn:hover {
+  background-color: #545b62;
+}
+
+.close-icon {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  cursor: pointer;
+  font-size: 24px;
+  color: #aaa;
+}

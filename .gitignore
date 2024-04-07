@@ -1,0 +1,10 @@
+cdk/node_modules
+
+SolarPanelSolutions/node_modules
+SolarPanelSolutions/build
+
+ClientCultivatorFrontend/node_modules
+ClientCultivatorFrontend/build
+
+ClientCultivatorFrontend/node_modules
+ClientCultivatorFrontend/dist
