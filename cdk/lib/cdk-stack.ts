@@ -23,27 +23,6 @@ export class CdkStack extends cdk.Stack {
       ...props,
     });
 
-    const states = [
-      "Utah",
-      "California",
-      "Nevada",
-      "Arizona",
-      "Colorado",
-      "Texas",
-      "NewMexico",
-      "Oregon",
-      "Washington",
-      "Idaho",
-      "Montana",
-      "Wyoming",
-      "NorthDakota",
-      "SouthDakota",
-      "Nebraska",
-      "Kansas",
-      "Oklahoma",
-      "Minnesota",
-    ];
-
     // Lambda
     const lambdaFunction = new lambda.Function(this, "MyFunction", {
       runtime: lambda.Runtime.NODEJS_20_X,
