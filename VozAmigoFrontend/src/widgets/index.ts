@@ -6,3 +6,4 @@ export { interactiveExercises } from './interactive-exercises';
 export { adaptiveFeedback } from './adaptive-feedback';
 export { culturalImmersion } from './cultural-immersion';
 export { realWorldScenarios } from './real-world-scenarios';
+export { assessmentWidget } from './assessment-widget';

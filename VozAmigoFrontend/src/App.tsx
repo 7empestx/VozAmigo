@@ -20,9 +20,12 @@ import {
   realWorldScenarios,
   adaptiveFeedback,
   culturalImmersion,
+  assessmentWidget,
 } from './widgets';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
-function Content() {
+function WidgetContent() {
   return (
     <Grid
       gridDefinition={[
@@ -46,7 +49,35 @@ function Content() {
   );
 }
 
-export default function App() {
+function AssessmentContent() {
+  return (
+    <Grid
+      gridDefinition={[
+        { colspan: { l: 12, m: 12, default: 12 } },
+      ]}
+    >
+      {[
+        assessmentWidget,
+      ].map((widget, index) => (
+        <BaseStaticWidget key={index} config={widget.data} />
+      ))}
+    </Grid>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Main />} />
+        <Route path="/assessment" element={<Main />} />
+      </Routes>
+    </Router>
+  );
+}
+
+export default function Main() {
+  const location = useLocation();
   const [toolsOpen, setToolsOpen] = useState(false);
   const [toolsContent, setToolsContent] = useState<React.ReactNode>(() => <DashboardMainInfo />);
   const appLayout = useRef<AppLayoutProps.Ref>(null);
@@ -57,16 +88,18 @@ export default function App() {
     appLayout.current?.focusToolsClose();
   };
 
+  const contentToRender = location.pathname === '/assessment' ? <AssessmentContent /> : <WidgetContent />;
+
   return (
     <HelpPanelProvider value={handleToolsContentChange}>
       <CustomAppLayout
         ref={appLayout}
         content={
-          <ContentLayout header={<DashboardHeader actions={<Button variant="primary">Support Voz Amigo</Button>} />}>
-            <Content />
+          <ContentLayout header={<DashboardHeader actions={<Button href='https://www.buymeacoffee.com/grantstarkman' target='_blank' variant="primary">Support Voz Amigo</Button>} />}>
+            {contentToRender}
           </ContentLayout>
         }
-        breadcrumbs={<Breadcrumbs items={[{ text: 'Dashboard', href: '#/' }]} />}
+        breadcrumbs={<Breadcrumbs items={[{ text: 'Dashboard', href: '/' }]} />}
         navigation={<DashboardSideNavigation />}
         tools={toolsContent}
         toolsOpen={toolsOpen}
