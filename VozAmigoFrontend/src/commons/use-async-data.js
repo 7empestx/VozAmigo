@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import { useState, useEffect } from "react";
+import { useState, useEffect } from 'react';
 
 export function useAsyncData(loadCallback) {
   const [items, setItems] = useState([]);
