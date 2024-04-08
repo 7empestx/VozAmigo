@@ -31,18 +31,18 @@ export class CdkStack extends cdk.Stack {
     });
 
     // Route 53
-    const domainName = "clientcultivator.biz";
+    const domainName = "grantstarkman.com";
     const hostedZone = route53.HostedZone.fromLookup(this, "HostedZone", {
       domainName: domainName,
     });
 
     // S3
-    const clientCultivatorWebsiteBucketName = "clientcultivator.biz";
-    const clientCultivatorWebsiteBucket = new s3.Bucket(
+    const vozAmigoWebsiteBucketName = "vozamigo.grantstarkman.com";
+    const vozAmigoWebsiteBucket = new s3.Bucket(
       this,
-      clientCultivatorWebsiteBucketName,
+      vozAmigoWebsiteBucketName,
       {
-        bucketName: clientCultivatorWebsiteBucketName,
+        bucketName: vozAmigoWebsiteBucketName,
         websiteIndexDocument: "index.html",
         removalPolicy: cdk.RemovalPolicy.DESTROY,
         versioned: true,
@@ -56,58 +56,59 @@ export class CdkStack extends cdk.Stack {
       },
     );
 
-    new s3deploy.BucketDeployment(this, "DeployClientCultivatorWebsite", {
-      sources: [s3deploy.Source.asset("../ClientCultivatorFrontend/dist")],
-      destinationBucket: clientCultivatorWebsiteBucket,
+    new s3deploy.BucketDeployment(this, "DeployVozAmigo", {
+      sources: [s3deploy.Source.asset("../VozAmigoFrontend/dist")],
+      destinationBucket: vozAmigoWebsiteBucket,
     });
 
-    const clientCultivatorCloudfrontOAI = new cloudfront.OriginAccessIdentity(
+    const vozAmigoCloudfrontOAI = new cloudfront.OriginAccessIdentity(
       this,
-      `ClientCultivatorCloudfrontOAI`,
+      `VozAmigoCloudfrontOAI`,
       {
-        comment: `OAI for ${clientCultivatorWebsiteBucket.bucketName} bucket.`,
+        comment: `OAI for ${vozAmigoWebsiteBucket.bucketName} bucket.`,
       },
     );
 
-    clientCultivatorWebsiteBucket.addToResourcePolicy(
+    vozAmigoWebsiteBucket.addToResourcePolicy(
       new iam.PolicyStatement({
         actions: ["s3:GetObject"],
-        resources: [clientCultivatorWebsiteBucket.arnForObjects("*")],
+        resources: [vozAmigoWebsiteBucket.arnForObjects("*")],
         principals: [
           new iam.CanonicalUserPrincipal(
-            clientCultivatorCloudfrontOAI.cloudFrontOriginAccessIdentityS3CanonicalUserId,
+            vozAmigoCloudfrontOAI.cloudFrontOriginAccessIdentityS3CanonicalUserId,
           ),
         ],
       }),
     );
-    const clientCultivatorDomainName = "clientcultivator.biz";
-    const clientCultivatorCloudfrontSiteCertificate = new acm.Certificate(
+
+    const vozAmigoDomainName = "vozamigo.grantstarkman.com";
+    const vozAmigoCloudfrontSiteCertificate = new acm.Certificate(
       this,
-      `ClientCultivatorCloudfrontSiteCertificate`,
+      `VozAmigoCloudfrontSiteCertificate`,
       {
-        domainName: clientCultivatorDomainName,
+        domainName: vozAmigoDomainName,
         validation: acm.CertificateValidation.fromDns(hostedZone),
       },
     );
-    const clientCultivatorViewerCertificate = cloudfront.ViewerCertificate.fromAcmCertificate(
-      clientCultivatorCloudfrontSiteCertificate,
+    const vozAmigoViewerCertificate = cloudfront.ViewerCertificate.fromAcmCertificate(
+      vozAmigoCloudfrontSiteCertificate,
       {
-        aliases: [clientCultivatorDomainName],
+        aliases: [vozAmigoDomainName],
       },
     );
-    const clientCultivatorDistribution = new cloudfront.CloudFrontWebDistribution(
+    const vozAmigoDistribution = new cloudfront.CloudFrontWebDistribution(
       this,
-      `ClientCultivatorCloudFrontDistribution`,
+      `VozAmigoCloudFrontDistribution`,
       {
         originConfigs: [
           {
             s3OriginSource: {
-              s3BucketSource: clientCultivatorWebsiteBucket,
+              s3BucketSource: vozAmigoWebsiteBucket,
             },
             behaviors: [{ isDefaultBehavior: true }],
           },
         ],
-        viewerCertificate: clientCultivatorViewerCertificate,
+        viewerCertificate: vozAmigoViewerCertificate,
         errorConfigurations: [
           {
             errorCode: 404,
@@ -124,132 +125,17 @@ export class CdkStack extends cdk.Stack {
         ],
       },
     );
-    const clientCultivatorRecordName = "clientcultivator.biz";
-    new route53.ARecord(this, `ClientCultivatorCloudFrontARecord`, {
+
+    const vozAmigoRecordName = "vozamigo.grantstarkman.com";
+    new route53.ARecord(this, `VozAmigoCloudFrontARecord`, {
       zone: hostedZone,
-      recordName: clientCultivatorRecordName,
+      recordName: vozAmigoRecordName,
       target: route53.RecordTarget.fromAlias(
-        new route53Targets.CloudFrontTarget(clientCultivatorDistribution),
+        new route53Targets.CloudFrontTarget(vozAmigoDistribution),
       ),
     });
 
-
-    states.forEach((state) => {
-      const websiteBucketName = `${state.toLowerCase()}.solarpanelsolutions.clientcultivator.biz`;
-      const websiteBucket = new s3.Bucket(this, websiteBucketName, {
-        bucketName: websiteBucketName,
-        websiteIndexDocument: "index.html",
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-        versioned: true,
-        blockPublicAccess: {
-          blockPublicAcls: false,
-          blockPublicPolicy: false,
-          ignorePublicAcls: false,
-          restrictPublicBuckets: false,
-        },
-        publicReadAccess: true,
-      });
-
-      const tempDir = fs.mkdtempSync(path.join("/tmp", "config-"));
-      const tempFilePath = path.join(tempDir, "config.json");
-
-      fs.writeFileSync(
-        tempFilePath,
-        JSON.stringify(
-          {
-            State: state,
-          },
-          null,
-          2,
-        ),
-      );
-
-      new s3deploy.BucketDeployment(this, `Deploy${state}Website`, {
-        sources: [
-          s3deploy.Source.asset("../SolarPanelSolutions/build"),
-          s3deploy.Source.asset(tempDir),
-        ],
-        destinationBucket: websiteBucket,
-      });
-
-      // CloudFront
-      const cloudfrontOAI = new cloudfront.OriginAccessIdentity(
-        this,
-        `CloudfrontOAI${state}`,
-        {
-          comment: `OAI for ${websiteBucket.bucketName} bucket.`,
-        },
-      );
-
-      websiteBucket.addToResourcePolicy(
-        new iam.PolicyStatement({
-          actions: ["s3:GetObject"],
-          resources: [websiteBucket.arnForObjects("*")],
-          principals: [
-            new iam.CanonicalUserPrincipal(
-              cloudfrontOAI.cloudFrontOriginAccessIdentityS3CanonicalUserId,
-            ),
-          ],
-        }),
-      );
-
-      const domainName = `${state.toLowerCase()}.solarpanelsolutions.clientcultivator.biz`;
-      const cloudfrontSiteCertificate = new acm.Certificate(
-        this,
-        `CloudFrontSiteCertificate${state}`,
-        {
-          domainName: domainName,
-          validation: acm.CertificateValidation.fromDns(hostedZone),
-        },
-      );
-
-      const viewerCertificate = cloudfront.ViewerCertificate.fromAcmCertificate(
-        cloudfrontSiteCertificate,
-        {
-          aliases: [domainName],
-        },
-      );
-
-      const distribution = new cloudfront.CloudFrontWebDistribution(
-        this,
-        `CloudFrontDistribution${state}`,
-        {
-          originConfigs: [
-            {
-              s3OriginSource: {
-                s3BucketSource: websiteBucket,
-              },
-              behaviors: [{ isDefaultBehavior: true }],
-            },
-          ],
-          viewerCertificate: viewerCertificate,
-          errorConfigurations: [
-            {
-              errorCode: 404,
-              responsePagePath: "/index.html",
-              responseCode: 200,
-              errorCachingMinTtl: 300,
-            },
-            {
-              errorCode: 403,
-              responsePagePath: "/index.html",
-              responseCode: 200,
-              errorCachingMinTtl: 300,
-            },
-          ],
-        },
-      );
-
-      const recordName = `${state.toLowerCase()}.solarpanelsolutions`;
-      new route53.ARecord(this, `CloudFrontARecord${state}`, {
-        zone: hostedZone,
-        recordName: recordName,
-        target: route53.RecordTarget.fromAlias(
-          new route53Targets.CloudFrontTarget(distribution),
-        ),
-      });
-    });
-
+    /*
     const siteCertificate = new acm.Certificate(this, "SiteCertificate", {
       domainName: "*.clientcultivator.biz",
       validation: acm.CertificateValidation.fromDns(hostedZone),
@@ -355,5 +241,6 @@ export class CdkStack extends cdk.Stack {
     });
 
     table.grantReadWriteData(lambdaFunction);
+    */
   }
 }
