@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React from 'react';
+import React from "react";
 import {
   CollectionPreferences,
   StatusIndicator,
@@ -9,15 +9,15 @@ import {
   Input,
   Autosuggest,
   ButtonDropdown,
-} from '@cloudscape-design/components';
-import { createTableSortLabelFn } from '../../i18n-strings';
+} from "@cloudscape-design/components";
+import { createTableSortLabelFn } from "../../i18n-strings";
 
 const rawColumns = [
   {
-    id: 'id',
-    sortingField: 'id',
-    header: 'Distribution ID',
-    cell: item => (
+    id: "id",
+    sortingField: "id",
+    header: "Distribution ID",
+    cell: (item) => (
       <div>
         <Link href="#">{item.id}</Link>
       </div>
@@ -25,77 +25,84 @@ const rawColumns = [
     minWidth: 180,
   },
   {
-    id: 'state',
-    sortingField: 'state',
-    header: 'State',
-    cell: item => (
-      <StatusIndicator type={item.state === 'Deactivated' ? 'error' : 'success'}>{item.state}</StatusIndicator>
+    id: "state",
+    sortingField: "state",
+    header: "State",
+    cell: (item) => (
+      <StatusIndicator
+        type={item.state === "Deactivated" ? "error" : "success"}
+      >
+        {item.state}
+      </StatusIndicator>
     ),
     minWidth: 120,
   },
   {
-    id: 'domainName',
-    sortingField: 'domainName',
-    cell: item => item.domainName,
-    header: 'Domain name',
+    id: "domainName",
+    sortingField: "domainName",
+    cell: (item) => item.domainName,
+    header: "Domain name",
     minWidth: 160,
     isRowHeader: true,
   },
   {
-    id: 'deliveryMethod',
-    sortingField: 'deliveryMethod',
-    header: 'Delivery method',
-    cell: item => item.deliveryMethod,
+    id: "deliveryMethod",
+    sortingField: "deliveryMethod",
+    header: "Delivery method",
+    cell: (item) => item.deliveryMethod,
     minWidth: 100,
   },
   {
-    id: 'sslCertificate',
-    sortingField: 'sslCertificate',
-    header: 'SSL certificate',
-    cell: item => item.sslCertificate,
+    id: "sslCertificate",
+    sortingField: "sslCertificate",
+    header: "SSL certificate",
+    cell: (item) => item.sslCertificate,
     minWidth: 100,
   },
   {
-    id: 'priceClass',
-    sortingField: 'priceClass',
-    header: 'Price class',
-    cell: item => item.priceClass,
+    id: "priceClass",
+    sortingField: "priceClass",
+    header: "Price class",
+    cell: (item) => item.priceClass,
     minWidth: 100,
   },
   {
-    id: 'logging',
-    sortingField: 'logging',
-    header: 'Logging',
-    cell: item => item.logging,
+    id: "logging",
+    sortingField: "logging",
+    header: "Logging",
+    cell: (item) => item.logging,
     minWidth: 100,
   },
   {
-    id: 'origin',
-    sortingField: 'origin',
-    header: 'Origin',
-    cell: item => item.origin,
+    id: "origin",
+    sortingField: "origin",
+    header: "Origin",
+    cell: (item) => item.origin,
     minWidth: 100,
   },
   {
-    id: 'actions',
-    header: 'Actions',
+    id: "actions",
+    header: "Actions",
     minWidth: 100,
-    cell: item => (
+    cell: (item) => (
       <ButtonDropdown
         variant="inline-icon"
         ariaLabel={`${item.id} actions`}
         expandToViewport={true}
         items={[
-          { id: 'view', text: 'View details' },
-          { id: 'edit', text: 'Edit' },
-          { id: 'delete', text: 'Delete' },
+          { id: "view", text: "View details" },
+          { id: "edit", text: "Edit" },
+          { id: "delete", text: "Delete" },
         ]}
       />
     ),
   },
 ];
 
-export const COLUMN_DEFINITIONS = rawColumns.map(column => ({ ...column, ariaLabel: createTableSortLabelFn(column) }));
+export const COLUMN_DEFINITIONS = rawColumns.map((column) => ({
+  ...column,
+  ariaLabel: createTableSortLabelFn(column),
+}));
 
 export const serverSideErrorsStore = new Map();
 
@@ -104,19 +111,20 @@ export const serverSideErrorsStore = new Map();
 // or one of the regular expressions mentioned here:
 //    https://www.oreilly.com/library/view/regular-expressions-cookbook/9781449327453/ch08s15.html
 export const domainNameRegex = /^(?:[\w_-]+\.){1,3}(?:com|net|org)$/i;
-export const INVALID_DOMAIN_MESSAGE = 'Valid domain name ends with .com, .org, or .net.';
+export const INVALID_DOMAIN_MESSAGE =
+  "Valid domain name ends with .com, .org, or .net.";
 
 const editableColumns = {
   state: {
     minWidth: 200,
     editConfig: {
-      ariaLabel: 'Edit state',
-      errorIconAriaLabel: 'State Validation Error',
-      editIconAriaLabel: 'editable',
+      ariaLabel: "Edit state",
+      errorIconAriaLabel: "State Validation Error",
+      editIconAriaLabel: "editable",
       editingCell: (item, { setValue, currentValue }) => {
         const options = [
-          { value: 'Activated', label: 'Activated' },
-          { value: 'Deactivated', label: 'Deactivated' },
+          { value: "Activated", label: "Activated" },
+          { value: "Deactivated", label: "Deactivated" },
         ];
         return (
           <Select
@@ -124,28 +132,39 @@ const editableColumns = {
             expandToViewport={true}
             ariaLabel="Select desired state"
             options={options}
-            onChange={event => {
+            onChange={(event) => {
               setValue(event.detail.selectedOption.value);
             }}
-            selectedOption={options.find(option => option.value === (currentValue ?? item.state))}
+            selectedOption={options.find(
+              (option) => option.value === (currentValue ?? item.state),
+            )}
           />
         );
       },
     },
-    cell: item => {
-      return <StatusIndicator type={item.state === 'Deactivated' ? 'error' : 'success'}>{item.state}</StatusIndicator>;
+    cell: (item) => {
+      return (
+        <StatusIndicator
+          type={item.state === "Deactivated" ? "error" : "success"}
+        >
+          {item.state}
+        </StatusIndicator>
+      );
     },
   },
   domainName: {
     minWidth: 180,
     editConfig: {
-      ariaLabel: 'Edit domain name',
-      errorIconAriaLabel: 'Domain Name Validation Error',
-      editIconAriaLabel: 'editable',
+      ariaLabel: "Edit domain name",
+      errorIconAriaLabel: "Domain Name Validation Error",
+      editIconAriaLabel: "editable",
       validation(item, value) {
         if (serverSideErrorsStore.has(item)) {
           if (value) {
-            serverSideErrorsStore.set(item, domainNameRegex.test(value) ? undefined : INVALID_DOMAIN_MESSAGE);
+            serverSideErrorsStore.set(
+              item,
+              domainNameRegex.test(value) ? undefined : INVALID_DOMAIN_MESSAGE,
+            );
           }
           return serverSideErrorsStore.get(item);
         }
@@ -156,43 +175,43 @@ const editableColumns = {
             autoFocus={true}
             ariaLabel="Edit domain name"
             value={currentValue ?? item.domainName}
-            onChange={event => {
+            onChange={(event) => {
               setValue(event.detail.value);
             }}
             placeholder="Enter domain name"
           />
         );
       },
-      disabledReason: item => {
-        if (item.deliveryMethod === 'RTMP') {
-          return 'You cannot change the domain name of an RTMP distribution.';
+      disabledReason: (item) => {
+        if (item.deliveryMethod === "RTMP") {
+          return "You cannot change the domain name of an RTMP distribution.";
         }
         return undefined;
       },
     },
-    cell: item => {
+    cell: (item) => {
       return item.domainName;
     },
   },
   sslCertificate: {
     minWidth: 180,
     editConfig: {
-      ariaLabel: 'Edit SSL certificate',
-      errorIconAriaLabel: 'Certificate Validation Error',
-      editIconAriaLabel: 'editable',
+      ariaLabel: "Edit SSL certificate",
+      errorIconAriaLabel: "Certificate Validation Error",
+      editIconAriaLabel: "editable",
       editingCell: (item, { setValue, currentValue }) => {
         const options = [
-          { value: 'Default', label: 'Default ' },
-          { value: 'ACM', label: 'ACM' },
-          { value: 'Custom', label: 'Custom' },
+          { value: "Default", label: "Default " },
+          { value: "ACM", label: "ACM" },
+          { value: "Custom", label: "Custom" },
         ];
         return (
           <Autosuggest
             autoFocus={true}
             value={currentValue ?? item.sslCertificate}
-            onChange={event => setValue(event.detail.value)}
+            onChange={(event) => setValue(event.detail.value)}
             options={options}
-            enteredTextLabel={value => `Use custom certificate "${value}"`}
+            enteredTextLabel={(value) => `Use custom certificate "${value}"`}
             expandToViewport={true}
             ariaLabel="SSL Certificate"
             clearAriaLabel="clear"
@@ -201,13 +220,13 @@ const editableColumns = {
         );
       },
     },
-    cell: item => {
+    cell: (item) => {
       return item.sslCertificate;
     },
   },
 };
 
-export const EDITABLE_COLUMN_DEFINITIONS = COLUMN_DEFINITIONS.map(column => {
+export const EDITABLE_COLUMN_DEFINITIONS = COLUMN_DEFINITIONS.map((column) => {
   if (editableColumns[column.id]) {
     return {
       ...column,
@@ -219,39 +238,39 @@ export const EDITABLE_COLUMN_DEFINITIONS = COLUMN_DEFINITIONS.map(column => {
 });
 
 const CONTENT_DISPLAY_OPTIONS = [
-  { id: 'id', label: 'Distribution ID', alwaysVisible: true },
-  { id: 'state', label: 'State' },
-  { id: 'domainName', label: 'Domain name' },
-  { id: 'deliveryMethod', label: 'Delivery method' },
-  { id: 'sslCertificate', label: 'SSL certificate' },
-  { id: 'priceClass', label: 'Price class' },
-  { id: 'logging', label: 'Logging' },
-  { id: 'origin', label: 'Origin' },
-  { id: 'actions', label: 'Actions' },
+  { id: "id", label: "Distribution ID", alwaysVisible: true },
+  { id: "state", label: "State" },
+  { id: "domainName", label: "Domain name" },
+  { id: "deliveryMethod", label: "Delivery method" },
+  { id: "sslCertificate", label: "SSL certificate" },
+  { id: "priceClass", label: "Price class" },
+  { id: "logging", label: "Logging" },
+  { id: "origin", label: "Origin" },
+  { id: "actions", label: "Actions" },
 ];
 
 export const PAGE_SIZE_OPTIONS = [
-  { value: 10, label: '10 Distributions' },
-  { value: 30, label: '30 Distributions' },
-  { value: 50, label: '50 Distributions' },
+  { value: 10, label: "10 Distributions" },
+  { value: 30, label: "30 Distributions" },
+  { value: 50, label: "50 Distributions" },
 ];
 
 export const DEFAULT_PREFERENCES = {
   pageSize: 30,
   contentDisplay: [
-    { id: 'id', visible: true },
-    { id: 'state', visible: true },
-    { id: 'domainName', visible: true },
-    { id: 'deliveryMethod', visible: true },
-    { id: 'sslCertificate', visible: true },
-    { id: 'priceClass', visible: false },
-    { id: 'logging', visible: false },
-    { id: 'origin', visible: false },
-    { id: 'actions', visible: true },
+    { id: "id", visible: true },
+    { id: "state", visible: true },
+    { id: "domainName", visible: true },
+    { id: "deliveryMethod", visible: true },
+    { id: "sslCertificate", visible: true },
+    { id: "priceClass", visible: false },
+    { id: "logging", visible: false },
+    { id: "origin", visible: false },
+    { id: "actions", visible: true },
   ],
   wrapLines: false,
   stripedRows: false,
-  contentDensity: 'comfortable',
+  contentDensity: "comfortable",
   stickyColumns: { first: 0, last: 1 },
 };
 
@@ -273,20 +292,22 @@ export const Preferences = ({
     contentDisplayPreference={{ options: contentDisplayOptions }}
     stickyColumnsPreference={{
       firstColumns: {
-        title: 'Stick first column(s)',
-        description: 'Keep the first column(s) visible while horizontally scrolling the table content.',
+        title: "Stick first column(s)",
+        description:
+          "Keep the first column(s) visible while horizontally scrolling the table content.",
         options: [
-          { label: 'None', value: 0 },
-          { label: 'First column', value: 1 },
-          { label: 'First two columns', value: 2 },
+          { label: "None", value: 0 },
+          { label: "First column", value: 1 },
+          { label: "First two columns", value: 2 },
         ],
       },
       lastColumns: {
-        title: 'Stick last column',
-        description: 'Keep the last column visible while horizontally scrolling the table content.',
+        title: "Stick last column",
+        description:
+          "Keep the last column visible while horizontally scrolling the table content.",
         options: [
-          { label: 'None', value: 0 },
-          { label: 'Last column', value: 1 },
+          { label: "None", value: 0 },
+          { label: "Last column", value: 1 },
         ],
       },
     }}

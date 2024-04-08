@@ -1,30 +1,31 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef } from "react";
 
 export default function useContentOrigins() {
   const requestParams = useRef({});
   const [options, setOptions] = useState([]);
-  const [status, setStatus] = useState('finished');
+  const [status, setStatus] = useState("finished");
 
   async function doRequest({ filteringText, currentPageIndex }) {
-    setStatus('loading');
+    setStatus("loading");
     try {
-      const { origins, hasNextPage } = await window.FakeServer.fetchContentOrigins({
-        filteringText,
-        currentPageIndex,
-      });
+      const { origins, hasNextPage } =
+        await window.FakeServer.fetchContentOrigins({
+          filteringText,
+          currentPageIndex,
+        });
       if (filteringText !== requestParams.current.filteringText) {
         return;
       }
       if (currentPageIndex === 1) {
         setOptions(origins);
       } else {
-        setOptions(oldOptions => [...oldOptions, ...origins]);
+        setOptions((oldOptions) => [...oldOptions, ...origins]);
       }
-      setStatus(hasNextPage ? 'pending' : 'finished');
+      setStatus(hasNextPage ? "pending" : "finished");
     } catch (error) {
-      setStatus('error');
+      setStatus("error");
     }
   }
 
@@ -47,5 +48,8 @@ export default function useContentOrigins() {
       },
     };
   }, [requestParams]);
-  return [{ options, filteringText: requestParams.current.filteringText, status }, handlers];
+  return [
+    { options, filteringText: requestParams.current.filteringText, status },
+    handlers,
+  ];
 }

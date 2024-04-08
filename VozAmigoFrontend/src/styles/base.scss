@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-@use '~@cloudscape-design/design-tokens' as cs;
+@use "~@cloudscape-design/design-tokens" as cs;
 
 body {
   background: cs.$color-background-layout-main;
