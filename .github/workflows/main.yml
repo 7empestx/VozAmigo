@@ -47,5 +47,5 @@ jobs:
         run: |
           ./recursiveBuild.sh
 
-          #- name: Invalidate CloudFront Cache
-        #run: aws cloudfront create-invalidation --distribution-id E9V0RWYE0KX81 --paths "/*"
+      - name: Invalidate CloudFront Cache
+        run: aws cloudfront create-invalidation --distribution-id E1TL4ZNUU9MSLJ --paths "/*"
