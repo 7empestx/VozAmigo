@@ -25,6 +25,13 @@ npm run build
 echo "VozAmigoFrontend application built successfully."
 cd ..
 
+echo "Building the Gemini Docker image..."
+cd Gemini
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 659946347679.dkr.ecr.us-east-1.amazonaws.com
+docker build --platform linux/amd64 -t 659946347679.dkr.ecr.us-east-1.amazonaws.com/gemini:latest .
+docker push 659946347679.dkr.ecr.us-east-1.amazonaws.com/gemini:latest
+cd ..
+
 echo "Building the Lambda function..."
 cd cdk/lambda/apiHandler
 npm run build
@@ -38,5 +45,7 @@ echo "CDK application synthesized successfully."
 echo "Deploying the CDK stack..."
 cdk deploy --require-approval never
 echo "CDK stack deployed successfully."
+
+aws lambda update-function-code --function-name gemini-lambda-function --image-uri 659946347679.dkr.ecr.us-east-1.amazonaws.com/gemini:latest | cat
 
 echo "Build and deployment script completed."

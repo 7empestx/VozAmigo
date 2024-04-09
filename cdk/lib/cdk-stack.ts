@@ -12,6 +12,7 @@ import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as fs from "fs";
 import * as path from "path";
+import * as ecr from "aws-cdk-lib/aws-ecr";
 
 export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -28,6 +29,21 @@ export class CdkStack extends cdk.Stack {
       runtime: lambda.Runtime.NODEJS_20_X,
       handler: "index.handler",
       code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/apiHandler")),
+    });
+
+    // Specify the ECR repository
+    const repository = ecr.Repository.fromRepositoryName(this, 'GeminiRepository', 'gemini');
+
+    // Define the Lambda function
+    const geminiLambdaFunction = new lambda.Function(this, 'GeminiFunction', {
+      functionName: "gemini-lambda-function",
+      code: lambda.Code.fromEcrImage(repository, {
+        tag: 'latest',
+      }),
+      handler: lambda.Handler.FROM_IMAGE,
+      runtime: lambda.Runtime.FROM_IMAGE,
+      memorySize: 1024,
+      timeout: cdk.Duration.seconds(30),
     });
 
     // Route 53
