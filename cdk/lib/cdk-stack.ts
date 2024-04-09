@@ -57,7 +57,7 @@ export class CdkStack extends cdk.Stack {
     );
 
     new s3deploy.BucketDeployment(this, "DeployVozAmigo", {
-      sources: [s3deploy.Source.asset("../VozAmigoFrontend/dist")],
+      sources: [s3deploy.Source.asset("../VozAmigoFrontend/build")],
       destinationBucket: vozAmigoWebsiteBucket,
     });
 
