@@ -39,6 +39,21 @@ export const assessmentWidget: WidgetConfig = {
   },
 };
 
+const getQuestionFromGemini = async (userData) => {
+  // Replace with actual API call to Gemini
+  const response = await fetch('/api/gemini/questions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData),
+  });
+
+  const questionData = await response.json();
+  return questionData;
+};
+
+
 function AssessmentWidgetHeader() {
   return (
     <Header
@@ -62,17 +77,6 @@ export default function AssessmentWidget() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<Map<number, number>>(new Map());
 
-  // Function to record the user's answer and move to the next question
-  const handleAnswer = (questionId: number, answerId: number) => {
-    setUserAnswers(new Map(userAnswers.set(questionId, answerId)));
-    if (currentQuestionIndex < exampleQuestions.length - 1) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    } else {
-      // The user has completed the assessment
-      // Here you could navigate to a results page or display the results inline
-    }
-  };
-
   // Function to render the current question
   const renderCurrentQuestion = () => {
     const currentQuestion = exampleQuestions[currentQuestionIndex];
@@ -90,6 +94,28 @@ export default function AssessmentWidget() {
       </div>
     );
   };
+
+  const [currentQuestion, setCurrentQuestion] = useState(null);
+  const [userResponses, setUserResponses] = useState([]);
+
+// Call this function whenever you need to get the next question
+const fetchNextQuestion = async () => {
+  const nextQuestionData = await getQuestionFromGemini({ previousResponses: userResponses });
+  setCurrentQuestion(nextQuestionData);
+};
+
+// Call this function when the user submits an answer
+const handleAnswer = (answer) => {
+  // Store the user's response
+  setUserResponses([...userResponses, answer]);
+  // Then fetch the next question
+  fetchNextQuestion();
+};
+
+useEffect(() => {
+  // Fetch the initial question
+  fetchNextQuestion();
+}, []);
 
   return (
     <div>

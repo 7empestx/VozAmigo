@@ -2,3 +2,7 @@ cdk/node_modules
 
 VozAmigoFrontend/node_modules
 VozAmigoFrontend/dist
+
+Gemini/node_modules
+Gemini/dist
+Gemini/.env
