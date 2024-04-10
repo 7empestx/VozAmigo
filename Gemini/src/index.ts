@@ -27,6 +27,11 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
     const question = await generateAssessmentQuestion(); // Await the result of the question generation
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify({
         message: question, // Send the generated question as the response
       }),
@@ -34,6 +39,11 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
   } catch (error) {
     return {
       statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*', // Adjust this to match your front-end's domain in production
+        'Access-Control-Allow-Credentials': true,
+      },
       body: JSON.stringify({
         error: 'Error generating the question.',
       }),
