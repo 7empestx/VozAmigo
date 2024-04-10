@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@cloudscape-design/components/header';
 import Link from '@cloudscape-design/components/link';
 import Box from '@cloudscape-design/components/box';
@@ -39,14 +39,17 @@ export const assessmentWidget: WidgetConfig = {
   },
 };
 
+const apiKey = process.env.API_KEY as string;
+
 const getQuestionFromGemini = async (userData) => {
   // Replace with actual API call to Gemini
-  const response = await fetch('/api/gemini/questions', {
-    method: 'POST',
+  console.log(apiKey);
+  const response = await fetch('https://api.grantstarkman.com/question', {
+    method: 'GET',
     headers: {
       'Content-Type': 'application/json',
+      'x-api-key': apiKey,
     },
-    body: JSON.stringify(userData),
   });
 
   const questionData = await response.json();

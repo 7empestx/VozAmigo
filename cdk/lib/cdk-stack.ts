@@ -198,17 +198,7 @@ export class CdkStack extends cdk.Stack {
       "GET",
       new apigateway.LambdaIntegration(geminiLambdaFunction),
       {
-        apiKeyRequired: true, // Require an API Key for this method
-      },
-    );
-
-    /*
-    leadResource.addMethod(
-      "POST",
-      new apigateway.LambdaIntegration(lambdaFunction),
-      {
         apiKeyRequired: true,
-        // Enable CORS for the POST method
         methodResponses: [
           {
             statusCode: "200",
@@ -221,12 +211,11 @@ export class CdkStack extends cdk.Stack {
               "method.response.header.Access-Control-Allow-Methods": true,
             },
           },
-        ],
+        ]
       },
     );
 
     leadResource.addCorsPreflight(corsOptions);
-  */
 
     // Route 53 Records
     new route53.ARecord(this, "APIGatewayARecord", {

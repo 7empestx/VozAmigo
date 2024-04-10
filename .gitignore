@@ -3,8 +3,10 @@ cdk/node_modules
 VozAmigoFrontend/node_modules
 VozAmigoFrontend/dist
 VozAmigoFrontend/build
+VozAmigoFrontend/.env
 
 Gemini/node_modules
 Gemini/dist
 Gemini/.env
 Gemini/response.json
+VozAmigoFrontend/.env

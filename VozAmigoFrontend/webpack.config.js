@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
+const Dotenv = require('dotenv-webpack');
 
 module.exports = {
   entry: './src/App.tsx',
@@ -43,9 +44,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './public/index.html'
     }),
-    new webpack.DefinePlugin({
-      'process.env.REACT_APP_X_API_KEY': JSON.stringify(process.env.REACT_APP_X_API_KEY),
-    }),
+    new Dotenv(),
   ],
   devServer: {
     static: path.join(__dirname, 'build'),
