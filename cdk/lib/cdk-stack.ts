@@ -24,13 +24,6 @@ export class CdkStack extends cdk.Stack {
       ...props,
     });
 
-    // Lambda
-    const lambdaFunction = new lambda.Function(this, "MyFunction", {
-      runtime: lambda.Runtime.NODEJS_20_X,
-      handler: "index.handler",
-      code: lambda.Code.fromAsset(path.join(__dirname, "../lambda/apiHandler")),
-    });
-
     // Specify the ECR repository
     const repository = ecr.Repository.fromRepositoryName(this, 'GeminiRepository', 'gemini');
 
@@ -151,16 +144,15 @@ export class CdkStack extends cdk.Stack {
       ),
     });
 
-    /*
     const siteCertificate = new acm.Certificate(this, "SiteCertificate", {
-      domainName: "*.clientcultivator.biz",
+      domainName: "*.grantstarkman.com",
       validation: acm.CertificateValidation.fromDns(hostedZone),
     });
 
     // API Gateway
-    const apiDomainName = "api.clientcultivator.biz";
-    const api = new apigateway.LambdaRestApi(this, "api.clientcultivator", {
-      handler: lambdaFunction,
+    const apiDomainName = "api.grantstarkman.com";
+    const api = new apigateway.LambdaRestApi(this, "api.grantstarkman.com", {
+      handler: geminiLambdaFunction,
       domainName: {
         domainName: apiDomainName,
         certificate: siteCertificate,
@@ -170,17 +162,17 @@ export class CdkStack extends cdk.Stack {
 
     const apiKey = new apigateway.ApiKey(this, "MyApiKey", {
       apiKeyName: "MyApiKey",
-      description: "API key for accessing MyFunction",
+      description: "API key for accessing the grantstarkman.com API.",
     });
 
     const usagePlan = new apigateway.UsagePlan(this, "UsagePlan", {
       name: "MyUsagePlan",
       throttle: {
-        rateLimit: 10, // Max number of requests per second
-        burstLimit: 20, // Max number of concurrent requests
+        rateLimit: 10,
+        burstLimit: 20,
       },
       quota: {
-        limit: 10000, // Max number of requests in a specified time period
+        limit: 10000,
         period: apigateway.Period.MONTH,
       },
     });
@@ -195,7 +187,7 @@ export class CdkStack extends cdk.Stack {
     });
 
     // Define the CORS options
-    const leadResource = api.root.addResource("lead");
+    const leadResource = api.root.addResource("question");
     const corsOptions = {
       allowOrigins: apigateway.Cors.ALL_ORIGINS,
       allowMethods: apigateway.Cors.ALL_METHODS,
@@ -204,12 +196,13 @@ export class CdkStack extends cdk.Stack {
 
     leadResource.addMethod(
       "GET",
-      new apigateway.LambdaIntegration(lambdaFunction),
+      new apigateway.LambdaIntegration(geminiLambdaFunction),
       {
         apiKeyRequired: true, // Require an API Key for this method
       },
     );
 
+    /*
     leadResource.addMethod(
       "POST",
       new apigateway.LambdaIntegration(lambdaFunction),
@@ -233,6 +226,7 @@ export class CdkStack extends cdk.Stack {
     );
 
     leadResource.addCorsPreflight(corsOptions);
+  */
 
     // Route 53 Records
     new route53.ARecord(this, "APIGatewayARecord", {
@@ -243,13 +237,7 @@ export class CdkStack extends cdk.Stack {
       ),
     });
 
-    new route53.TxtRecord(this, "DomainVerificationRecord", {
-      zone: hostedZone,
-      values: [
-        "google-site-verification=9j0leehbW0QOr90z5PT-HX9fCwrHBsRzPI86FsITNVk",
-      ],
-    });
-
+    /*
     // DynamoDB
     const table = new dynamodb.Table(this, "LeadsTable", {
       partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
