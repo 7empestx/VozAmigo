@@ -42,7 +42,6 @@ export const assessmentWidget: WidgetConfig = {
 const apiKey = process.env.API_KEY as string;
 
 const getQuestionFromGemini = async (userData) => {
-  // Replace with actual API call to Gemini
   console.log(apiKey);
   const response = await fetch('https://api.grantstarkman.com/question', {
     method: 'GET',
