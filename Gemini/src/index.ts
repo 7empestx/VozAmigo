@@ -5,7 +5,8 @@ import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
-
+// assessment question
+//
 async function generateAssessmentQuestion(): Promise<string> {
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
   const prompt = 'Write a prompt for a beginner-level Spanish language assessment question.';
