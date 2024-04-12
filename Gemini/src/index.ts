@@ -11,7 +11,6 @@ async function generateAssessmentQuestion(): Promise<string> {
   const prompt = 'Write a prompt for a beginner-level Spanish language assessment question.';
 
   try {
-    console.log('Hello from Lambda!');
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = await response.text();
