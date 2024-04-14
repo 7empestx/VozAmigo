@@ -165,6 +165,15 @@ export class CdkStack extends cdk.Stack {
       }
     });
 
+    api.addGatewayResponse("Default4xx", {
+      type: apigateway.ResponseType.DEFAULT_4XX,
+      responseHeaders: {
+        "Access-Control-Allow-Origin": "'*'",
+        "Access-Control-Allow-Headers": "'*'",
+        "Access-Control-Allow-Methods": "'*'",
+      },
+    });
+
     const apiKey = new apigateway.ApiKey(this, "MyApiKey", {
       apiKeyName: "MyApiKey",
       description: "API key for accessing the grantstarkman.com API.",
@@ -192,8 +201,8 @@ export class CdkStack extends cdk.Stack {
     });
 
     // Define the CORS options
-    const leadResource = api.root.addResource("question");
-    leadResource.addMethod(
+    const questionResource = api.root.addResource("question");
+    questionResource.addMethod(
       "GET",
       new apigateway.LambdaIntegration(geminiLambdaFunction),
       {
