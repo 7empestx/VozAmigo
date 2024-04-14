@@ -193,12 +193,6 @@ export class CdkStack extends cdk.Stack {
 
     // Define the CORS options
     const leadResource = api.root.addResource("question");
-    const corsOptions = {
-      allowOrigins: apigateway.Cors.ALL_ORIGINS,
-      allowMethods: apigateway.Cors.ALL_METHODS,
-      allowHeaders: apigateway.Cors.DEFAULT_HEADERS.concat(["x-api-key"]),
-    };
-
     leadResource.addMethod(
       "GET",
       new apigateway.LambdaIntegration(geminiLambdaFunction),
@@ -210,17 +204,10 @@ export class CdkStack extends cdk.Stack {
             responseModels: {
               "application/json": apigateway.Model.EMPTY_MODEL,
             },
-            responseParameters: {
-              "method.response.header.Access-Control-Allow-Origin": true,
-              "method.response.header.Access-Control-Allow-Headers": true,
-              "method.response.header.Access-Control-Allow-Methods": true,
-            },
           },
         ]
       },
     );
-
-    leadResource.addCorsPreflight(corsOptions);
 
     // Route 53 Records
     new route53.ARecord(this, "APIGatewayARecord", {

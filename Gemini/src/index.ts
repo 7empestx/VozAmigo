@@ -48,7 +48,7 @@ export const handler = async (event: APIGatewayEvent, context: Context): Promise
       statusCode: 500,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*', // Adjust this to match your front-end's domain in production
+        'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Credentials': true,
       },
       body: JSON.stringify({
