@@ -8,7 +8,12 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
 async function generateAssessmentQuestion(): Promise<string> {
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-  const prompt = 'Write a prompt for a beginner-level Spanish language assessment question.';
+  const prompt = `Write a beginner-level Spanish language assessment question with a clear and distinct question followed by multiple choice answers. Format the question and answers like this:
+  Question: [Your question here]
+  a) Answer option 1
+  b) Answer option 2
+  c) Answer option 3
+  d) Answer option 4`;
 
   try {
     const result = await model.generateContent(prompt);
