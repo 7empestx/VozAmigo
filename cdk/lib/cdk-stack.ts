@@ -158,6 +158,11 @@ export class CdkStack extends cdk.Stack {
         certificate: siteCertificate,
       },
       proxy: false,
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowMethods: apigateway.Cors.ALL_METHODS,
+        allowHeaders: apigateway.Cors.DEFAULT_HEADERS.concat(["x-api-key"]),
+      }
     });
 
     const apiKey = new apigateway.ApiKey(this, "MyApiKey", {
