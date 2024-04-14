@@ -5,6 +5,7 @@ import Box from '@cloudscape-design/components/box';
 import { isVisualRefresh } from './../../common/apply-mode';
 import { WidgetConfig } from '../interfaces';
 import Button from '@cloudscape-design/components/button';
+import config from '../../../../config/environment.json';
 
 export const assessmentWidget: WidgetConfig = {
   definition: { defaultRowSpan: 3, defaultColumnSpan: 2 },
@@ -59,17 +60,18 @@ export default function AssessmentWidget() {
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [userResponses, setUserResponses] = useState([]);
 
+// Function to fetch and parse the next question
 const fetchNextQuestion = async () => {
   try {
     const data = await getQuestionFromGemini({ previousResponses: userResponses });
 
-    // Parse the structured response
-    const questionPattern = /Question:\s*(.+?)\s*\n/;
-    const optionsPattern = /\b([a-d])\)\s*(.+?)(?=\n|$)/g;
+    // Generalized regex to match various response formats
+    const questionPattern = /Question:\s*(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d])/s;
+    const optionsPattern = /\b([a-d])\)\s*(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d]|$)/g;
 
     // Extract the question text
     const questionMatch = questionPattern.exec(data.message);
-    const questionText = questionMatch ? questionMatch[1].trim() : "Couldn't parse the question.";
+    const questionText = questionMatch ? questionMatch[2].trim() : "Couldn't parse the question.";
 
     // Extract the answer options
     const answerOptions = [];
@@ -77,7 +79,7 @@ const fetchNextQuestion = async () => {
     while ((match = optionsPattern.exec(data.message)) !== null) {
       answerOptions.push({
         id: match[1], // The letter (a, b, c, d) serving as a unique identifier
-        text: match[2].trim(), // The text of the answer option
+        text: match[3].trim(), // The text of the answer option
       });
     }
 

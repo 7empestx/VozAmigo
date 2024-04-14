@@ -5,8 +5,8 @@ import { Context, APIGatewayProxyResult, APIGatewayEvent } from 'aws-lambda';
 dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
-// assessment question
-//
+
+// This function generates a beginner-level Spanish language assessment question
 async function generateAssessmentQuestion(): Promise<string> {
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
   const prompt = `Write a beginner-level Spanish language assessment question with a clear and distinct question followed by multiple choice answers. Format the question and answers like this:
@@ -28,6 +28,7 @@ async function generateAssessmentQuestion(): Promise<string> {
   }
 }
 
+// This function is the Lambda handler. It is the main entry point for the Lambda function
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
   try {
     const question = await generateAssessmentQuestion(); // Await the result of the question generation
