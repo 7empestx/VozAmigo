@@ -7,10 +7,10 @@ import * as acm from "aws-cdk-lib/aws-certificatemanager";
 import * as route53 from "aws-cdk-lib/aws-route53";
 import * as apigateway from "aws-cdk-lib/aws-apigateway";
 import * as route53Targets from "aws-cdk-lib/aws-route53-targets";
-import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as fs from "fs";
+import * as os from "os";
 import * as path from "path";
 import * as ecr from "aws-cdk-lib/aws-ecr";
 
@@ -69,8 +69,21 @@ export class CdkStack extends cdk.Stack {
       },
     );
 
+    // Define JSON content and create a temp file
+    const jsonData = {
+      environment: "alpha",
+      apiUrl: "https://api.grantstarkman.com/question"
+    };
+
+    const dedicatedDir = path.join(__dirname, 'tempAssets');
+    if (!fs.existsSync(dedicatedDir)) {
+      fs.mkdirSync(dedicatedDir);
+    }
+    const jsonFilePath = path.join(dedicatedDir, 'config.json');
+    fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2));
+
     new s3deploy.BucketDeployment(this, "DeployVozAmigo", {
-      sources: [s3deploy.Source.asset("../VozAmigoFrontend/build")],
+      sources: [s3deploy.Source.asset("../VozAmigoFrontend/build"), s3deploy.Source.asset(dedicatedDir)],
       destinationBucket: vozAmigoWebsiteBucket,
     });
 

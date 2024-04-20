@@ -5,7 +5,7 @@ import Box from "@cloudscape-design/components/box";
 import { isVisualRefresh } from "./../../common/apply-mode";
 import { WidgetConfig } from "../interfaces";
 import Button from "@cloudscape-design/components/button";
-import config from "../../../../config/environment.json";
+import config from "../../../public/environment.json";
 import body from "../../../../config/body.json";
 
 export const assessmentWidget: WidgetConfig = {
@@ -24,6 +24,7 @@ export const assessmentWidget: WidgetConfig = {
 const apiKey = process.env.API_KEY as string;
 
 const getQuestionFromGemini = async (userData) => {
+  console.log(config);
   if (config.envrionment === "local") {
     console.log("Fetching question from local API...");
     const response = await fetch(config.apiUrl, {
