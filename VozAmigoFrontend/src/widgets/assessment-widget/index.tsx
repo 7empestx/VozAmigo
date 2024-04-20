@@ -24,25 +24,47 @@ export const assessmentWidget: WidgetConfig = {
 const apiKey = process.env.API_KEY as string;
 
 const getQuestionFromGemini = async (userData) => {
-  const response = await fetch(config.apiUrl, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": apiKey,
-    },
-    body: JSON.stringify(body),
-  });
+  if (config.envrionment === "local") {
+    console.log("Fetching question from local API...");
+    const response = await fetch(config.apiUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+      },
+      body: JSON.stringify(body),
+    });
 
-  if (!response.ok) {
-    const errorDetails = await response.text();
-    throw new Error(
-      `API responded with status ${response.status}: ${errorDetails}`,
-    );
+    if (!response.ok) {
+      const errorDetails = await response.text();
+      throw new Error(
+        `API responded with status ${response.status}: ${errorDetails}`,
+      );
+    }
+
+    const questionData = await response.json();
+    return questionData;
+  } else {
+    console.log("Fetching question from remote API...");
+    const response = await fetch("https://api.grantstarkman.com/question", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": apiKey,
+      },
+    });
+
+    if (!response.ok) {
+      const errorDetails = await response.text();
+      throw new Error(
+        `API responded with status ${response.status}: ${errorDetails}`,
+      );
+    }
+
+    const questionData = await response.json();
+    return questionData;
   }
-
-  const questionData = await response.json();
-  return questionData;
-};
+}
 
 function AssessmentWidgetHeader() {
   return <Header>Assessment Widget</Header>;
