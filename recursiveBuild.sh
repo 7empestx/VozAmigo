@@ -32,13 +32,8 @@ docker build --platform linux/amd64 -t 659946347679.dkr.ecr.us-east-1.amazonaws.
 docker push 659946347679.dkr.ecr.us-east-1.amazonaws.com/gemini:latest
 cd ..
 
-echo "Building the Lambda function..."
-cd cdk/lambda/apiHandler
-npm run build
-echo "Lambda function built successfully."
-cd ../..
-
 echo "Synthesizing the CDK application..."
+cd cdk
 cdk synth
 echo "CDK application synthesized successfully."
 
