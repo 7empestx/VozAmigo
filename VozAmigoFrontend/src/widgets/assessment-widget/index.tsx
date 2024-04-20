@@ -6,6 +6,7 @@ import { isVisualRefresh } from './../../common/apply-mode';
 import { WidgetConfig } from '../interfaces';
 import Button from '@cloudscape-design/components/button';
 import config from '../../../../config/environment.json';
+import body from '../../../../config/body.json';
 
 export const assessmentWidget: WidgetConfig = {
   definition: { defaultRowSpan: 3, defaultColumnSpan: 2 },
@@ -23,56 +24,23 @@ export const assessmentWidget: WidgetConfig = {
 const apiKey = process.env.API_KEY as string;
 
 const getQuestionFromGemini = async (userData) => {
-  // Replace with actual API call to Gemini
-  const body = JSON.stringify({
-    // Your Lambda function's expected event object structure
-  });
-    const response = await fetch(config.apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-      },
-      body: body,
-    });
-
-    if (!response.ok) {
-      const errorDetails = await response.text();
-      throw new Error(`API responded with status ${response.status}: ${errorDetails}`);
-    }
-
-    const questionData = await response.json();
-    return questionData;
-};
-/*
-const invokeLambdaLocally = async () => {
-  const url = "http://localhost:9000/2015-03-31/functions/function/invocations";
-  const headers = {
-    'Content-Type': 'application/json'
-  };
-  const body = JSON.stringify({
-    // Your Lambda function's expected event object structure
+  const response = await fetch(config.apiUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+    },
+    body: JSON.stringify(body),
   });
 
-  try {
-    const response = await fetch(url, {
-      method: 'POST', // Must be POST for aws-lambda-ric
-      headers: headers,
-      body: body
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Error invoking Lambda locally:", error);
+  if (!response.ok) {
+    const errorDetails = await response.text();
+    throw new Error(`API responded with status ${response.status}: ${errorDetails}`);
   }
+
+  const questionData = await response.json();
+  return questionData;
 };
-invokeLambdaLocally();
-*/
 
 function AssessmentWidgetHeader() {
   return (
@@ -97,43 +65,49 @@ export default function AssessmentWidget() {
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [userResponses, setUserResponses] = useState([]);
 
-// Function to fetch and parse the next question
-const fetchNextQuestion = async () => {
-  try {
-    const data = await getQuestionFromGemini({ previousResponses: userResponses });
+  const fetchNextQuestion = async () => {
+    try {
+      const response = await getQuestionFromGemini({ previousResponses: userResponses });
+      console.log("Received data:", response); // This will log the full response object
 
-    // Generalized regex to match various response formats
-    const questionPattern = /Question:\s*(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d])/s;
-    const optionsPattern = /\b([a-d])\)\s*(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d]|$)/g;
+      // Parse the JSON string in the body to get the actual data object
+      const data = JSON.parse(response.body);
+      console.log("Parsed data:", data); // Log the parsed data to ensure it's correct
 
-    // Extract the question text
-    const questionMatch = questionPattern.exec(data.message);
-    const questionText = questionMatch ? questionMatch[2].trim() : "Couldn't parse the question.";
+      const questionPattern = /Question:\s*(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d])/s;
+      const optionsPattern = /\b([a-d])\)\s+(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d]|$)/g;
 
-    // Extract the answer options
-    const answerOptions = [];
-    let match;
-    while ((match = optionsPattern.exec(data.message)) !== null) {
-      answerOptions.push({
-        id: match[1], // The letter (a, b, c, d) serving as a unique identifier
-        text: match[3].trim(), // The text of the answer option
-      });
+      const questionMatch = questionPattern.exec(data.message);
+      const questionText = questionMatch ? questionMatch[2].trim() : "Couldn't parse the question.";
+
+      const answerOptions = [];
+      let match;
+      while ((match = optionsPattern.exec(data.message)) !== null) {
+        answerOptions.push({
+          id: match[1],
+          text: match[3].trim(),
+        });
+      }
+
+      if (!questionMatch || answerOptions.length === 0) {
+        console.error("Failed to parse the question or options:", data.message);
+        setCurrentQuestion({ questionText: "Failed to parse the question. Please try again or contact support.", answerOptions: [] });
+        return; // Stop further execution if parsing fails
+      }
+
+      const questionData = {
+        id: Date.now(),
+        questionText: questionText,
+        answerOptions: answerOptions,
+        correctAnswerId: null // Assuming correct answer handling is done elsewhere
+      };
+
+      setCurrentQuestion(questionData);
+    } catch (error) {
+      console.error('Failed to fetch or parse question:', error);
+      setCurrentQuestion({ questionText: "Error fetching or parsing question. Please check the network or contact support.", answerOptions: [] });
     }
-
-    // Update the currentQuestion state with the parsed data
-    const questionData = {
-      id: Date.now(), // Generating a unique id for the question
-      questionText: questionText,
-      answerOptions: answerOptions,
-      correctAnswerId: null // Placeholder, as the correct answer isn't provided in the response
-    };
-
-    setCurrentQuestion(questionData);
-  } catch (error) {
-    // Log detailed error for better diagnostics
-    console.error('Failed to fetch question:', error);
-  }
-};
+  };
 
   // Function to handle user's answer and fetch the next question
   const handleAnswer = (questionId, answerId) => {
@@ -141,19 +115,20 @@ const fetchNextQuestion = async () => {
     fetchNextQuestion();
   };
 
-  // Function to render the current question
   const renderCurrentQuestion = () => {
     if (!currentQuestion) {
       return <p>Loading question...</p>;
     }
 
+    console.log("Rendering answer options:", currentQuestion.answerOptions); // Debug: log options
+
     return (
       <div>
         <h2>{currentQuestion.questionText}</h2>
-        {currentQuestion.answerOptions.map((answerOption) => (
+        {currentQuestion.answerOptions.map((answerOption, index) => (
           <Button
             onClick={() => handleAnswer(currentQuestion.id, answerOption.id)}
-            key={answerOption.id}
+            key={answerOption.id + index} // Combine id with index to ensure uniqueness
           >
             {answerOption.text}
           </Button>
