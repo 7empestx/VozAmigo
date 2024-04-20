@@ -35,6 +35,7 @@ const getQuestionFromGemini = async (userData, config) => {
       body: JSON.stringify(body),
     });
 
+    // const data = JSON.parse(response.body);
     if (!response.ok) {
       const errorDetails = await response.text();
       throw new Error(
@@ -43,7 +44,8 @@ const getQuestionFromGemini = async (userData, config) => {
     }
 
     const questionData = await response.json();
-    return questionData;
+    const data = JSON.parse(questionData.body);
+    return data;
   } else {
     console.log("Fetching question from remote API...");
     const response = await fetch("https://api.grantstarkman.com/question", {
@@ -112,7 +114,7 @@ export default function AssessmentWidget() {
       console.log("Received data:", response); // This will log the full response object
 
       // Parse the JSON string in the body to get the actual data object
-      const data = JSON.parse(response.body);
+      const data = response;
       console.log("Parsed data:", data); // Log the parsed data to ensure it's correct
 
       const questionPattern =
