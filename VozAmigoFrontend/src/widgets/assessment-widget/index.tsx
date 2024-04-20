@@ -24,18 +24,55 @@ const apiKey = process.env.API_KEY as string;
 
 const getQuestionFromGemini = async (userData) => {
   // Replace with actual API call to Gemini
-  const response = await fetch('https://api.grantstarkman.com/question', {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-    },
+  const body = JSON.stringify({
+    // Your Lambda function's expected event object structure
+  });
+    const response = await fetch(config.apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+      },
+      body: body,
+    });
+
+    if (!response.ok) {
+      const errorDetails = await response.text();
+      throw new Error(`API responded with status ${response.status}: ${errorDetails}`);
+    }
+
+    const questionData = await response.json();
+    return questionData;
+};
+/*
+const invokeLambdaLocally = async () => {
+  const url = "http://localhost:9000/2015-03-31/functions/function/invocations";
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+  const body = JSON.stringify({
+    // Your Lambda function's expected event object structure
   });
 
-  const questionData = await response.json();
-  return questionData;
-};
+  try {
+    const response = await fetch(url, {
+      method: 'POST', // Must be POST for aws-lambda-ric
+      headers: headers,
+      body: body
+    });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error invoking Lambda locally:", error);
+  }
+};
+invokeLambdaLocally();
+*/
 
 function AssessmentWidgetHeader() {
   return (

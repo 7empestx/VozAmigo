@@ -153,6 +153,7 @@ export class CdkStack extends cdk.Stack {
     const apiDomainName = "api.grantstarkman.com";
     const api = new apigateway.LambdaRestApi(this, "api.grantstarkman.com", {
       handler: geminiLambdaFunction,
+      apiKeySourceType: apigateway.ApiKeySourceType.HEADER,
       domainName: {
         domainName: apiDomainName,
         certificate: siteCertificate,
@@ -162,6 +163,7 @@ export class CdkStack extends cdk.Stack {
         allowOrigins: apigateway.Cors.ALL_ORIGINS,
         allowMethods: apigateway.Cors.ALL_METHODS,
         allowHeaders: apigateway.Cors.DEFAULT_HEADERS.concat(["x-api-key"]),
+        allowCredentials: true,
       }
     });
 
@@ -206,7 +208,6 @@ export class CdkStack extends cdk.Stack {
       "GET",
       new apigateway.LambdaIntegration(geminiLambdaFunction),
       {
-        apiKeyRequired: true,
         methodResponses: [
           {
             statusCode: "200",
@@ -226,15 +227,5 @@ export class CdkStack extends cdk.Stack {
         new route53Targets.ApiGateway(api),
       ),
     });
-
-    /*
-    // DynamoDB
-    const table = new dynamodb.Table(this, "LeadsTable", {
-      partitionKey: { name: "id", type: dynamodb.AttributeType.STRING },
-      tableName: "Leads",
-    });
-
-    table.grantReadWriteData(lambdaFunction);
-    */
   }
 }

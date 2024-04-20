@@ -14,7 +14,8 @@ async function generateAssessmentQuestion(): Promise<string> {
   a) Answer option 1
   b) Answer option 2
   c) Answer option 3
-  d) Answer option 4`;
+  d) Answer option 4
+  The correct answer is: [Your correct answer here]`;
 
   try {
     const result = await model.generateContent(prompt);
@@ -30,6 +31,7 @@ async function generateAssessmentQuestion(): Promise<string> {
 
 // This function is the Lambda handler. It is the main entry point for the Lambda function
 export const handler = async (event: APIGatewayEvent, context: Context): Promise<APIGatewayProxyResult> => {
+  console.log('Event:', event);
   try {
     const question = await generateAssessmentQuestion(); // Await the result of the question generation
     return {
