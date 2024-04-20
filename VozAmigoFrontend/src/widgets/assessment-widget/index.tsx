@@ -5,7 +5,7 @@ import Box from "@cloudscape-design/components/box";
 import { isVisualRefresh } from "./../../common/apply-mode";
 import { WidgetConfig } from "../interfaces";
 import Button from "@cloudscape-design/components/button";
-import body from "../../../../config/body.json";
+import { getQuestionFromGemini } from "./../../api/api";
 
 export const assessmentWidget: WidgetConfig = {
   definition: { defaultRowSpan: 3, defaultColumnSpan: 2 },
@@ -19,54 +19,6 @@ export const assessmentWidget: WidgetConfig = {
     footer: AssessmentWidgetFooter,
   },
 };
-
-const apiKey = process.env.API_KEY as string;
-
-const getQuestionFromGemini = async (userData, config) => {
-  console.log(config);
-  if (config.envrionment === "local") {
-    console.log("Fetching question from local API...");
-    const response = await fetch(config.apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-      },
-      body: JSON.stringify(body),
-    });
-
-    // const data = JSON.parse(response.body);
-    if (!response.ok) {
-      const errorDetails = await response.text();
-      throw new Error(
-        `API responded with status ${response.status}: ${errorDetails}`,
-      );
-    }
-
-    const questionData = await response.json();
-    const data = JSON.parse(questionData.body);
-    return data;
-  } else {
-    console.log("Fetching question from remote API...");
-    const response = await fetch("https://api.grantstarkman.com/question", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": apiKey,
-      },
-    });
-
-    if (!response.ok) {
-      const errorDetails = await response.text();
-      throw new Error(
-        `API responded with status ${response.status}: ${errorDetails}`,
-      );
-    }
-
-    const questionData = await response.json();
-    return questionData;
-  }
-}
 
 function AssessmentWidgetHeader() {
   return <Header>Assessment Widget</Header>;
@@ -107,60 +59,57 @@ export default function AssessmentWidget() {
   const fetchNextQuestion = async () => {
     if (!config) return;
 
-    try {
-      const response = await getQuestionFromGemini({
-        previousResponses: userResponses,
-      }, config);
-      console.log("Received data:", response); // This will log the full response object
+    let attempts = 0;
+    const maxAttempts = 5; // Set a reasonable limit to avoid infinite loops
 
-      // Parse the JSON string in the body to get the actual data object
-      const data = response;
-      console.log("Parsed data:", data); // Log the parsed data to ensure it's correct
+    while (attempts < maxAttempts) {
+      attempts++;
+      try {
+        const response = await getQuestionFromGemini({
+          previousResponses: userResponses,
+        }, config);
+        console.log("Attempt", attempts, "Received data:", response);
 
-      const questionPattern =
-        /Question:\s*(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d])/s;
-      const optionsPattern =
-        /\b([a-d])\)\s+(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d]|$)/g;
+        const data = response;
 
-      const questionMatch = questionPattern.exec(data.message);
-      const questionText = questionMatch
-        ? questionMatch[2].trim()
-        : "Couldn't parse the question.";
+        const questionPattern = /Question:\s*(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d])/s;
+        const optionsPattern = /\b([a-d])\)\s+(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d]|$)/g;
 
-      const answerOptions = [];
-      let match;
-      while ((match = optionsPattern.exec(data.message)) !== null) {
-        answerOptions.push({
-          id: match[1],
-          text: match[3].trim(),
-        });
+        const questionMatch = questionPattern.exec(data.message);
+        const questionText = questionMatch ? questionMatch[2].trim() : "Couldn't parse the question.";
+
+        const answerOptions = [];
+        let match;
+        while ((match = optionsPattern.exec(data.message)) !== null) {
+          answerOptions.push({
+            id: match[1],
+            text: match[3].trim(),
+          });
+        }
+
+        if (questionMatch && answerOptions.length > 0) {
+          const questionData = {
+            id: Date.now(),
+            questionText,
+            answerOptions,
+            correctAnswerId: null,
+          };
+
+          setCurrentQuestion(questionData);
+          return; // Exit the loop on successful parsing
+        } else {
+          console.error("Parsing failed, retrying...");
+        }
+      } catch (error) {
+        console.error("Attempt", attempts, "Failed to fetch or parse question:", error);
+        if (attempts >= maxAttempts) {
+          setCurrentQuestion({
+            questionText: "Error fetching or parsing question after multiple attempts. Please check the network or contact support.",
+            answerOptions: [],
+          });
+          return; // Exit the loop after reaching the maximum number of attempts
+        }
       }
-
-      if (!questionMatch || answerOptions.length === 0) {
-        console.error("Failed to parse the question or options:", data.message);
-        setCurrentQuestion({
-          questionText:
-            "Failed to parse the question. Please try again or contact support.",
-          answerOptions: [],
-        });
-        return; // Stop further execution if parsing fails
-      }
-
-      const questionData = {
-        id: Date.now(),
-        questionText: questionText,
-        answerOptions: answerOptions,
-        correctAnswerId: null, // Assuming correct answer handling is done elsewhere
-      };
-
-      setCurrentQuestion(questionData);
-    } catch (error) {
-      console.error("Failed to fetch or parse question:", error);
-      setCurrentQuestion({
-        questionText:
-          "Error fetching or parsing question. Please check the network or contact support.",
-        answerOptions: [],
-      });
     }
   };
 
