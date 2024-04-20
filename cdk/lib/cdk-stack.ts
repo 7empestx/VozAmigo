@@ -25,13 +25,17 @@ export class CdkStack extends cdk.Stack {
     });
 
     // Specify the ECR repository
-    const repository = ecr.Repository.fromRepositoryName(this, 'GeminiRepository', 'gemini');
+    const repository = ecr.Repository.fromRepositoryName(
+      this,
+      "GeminiRepository",
+      "gemini",
+    );
 
     // Define the Lambda function
-    const geminiLambdaFunction = new lambda.Function(this, 'GeminiFunction', {
+    const geminiLambdaFunction = new lambda.Function(this, "GeminiFunction", {
       functionName: "gemini-lambda-function",
       code: lambda.Code.fromEcrImage(repository, {
-        tag: 'latest',
+        tag: "latest",
       }),
       handler: lambda.Handler.FROM_IMAGE,
       runtime: lambda.Runtime.FROM_IMAGE,
@@ -99,12 +103,13 @@ export class CdkStack extends cdk.Stack {
         validation: acm.CertificateValidation.fromDns(hostedZone),
       },
     );
-    const vozAmigoViewerCertificate = cloudfront.ViewerCertificate.fromAcmCertificate(
-      vozAmigoCloudfrontSiteCertificate,
-      {
-        aliases: [vozAmigoDomainName],
-      },
-    );
+    const vozAmigoViewerCertificate =
+      cloudfront.ViewerCertificate.fromAcmCertificate(
+        vozAmigoCloudfrontSiteCertificate,
+        {
+          aliases: [vozAmigoDomainName],
+        },
+      );
     const vozAmigoDistribution = new cloudfront.CloudFrontWebDistribution(
       this,
       `VozAmigoCloudFrontDistribution`,
@@ -164,7 +169,7 @@ export class CdkStack extends cdk.Stack {
         allowMethods: apigateway.Cors.ALL_METHODS,
         allowHeaders: apigateway.Cors.DEFAULT_HEADERS.concat(["x-api-key"]),
         allowCredentials: true,
-      }
+      },
     });
 
     api.addGatewayResponse("Default4xx", {
@@ -215,7 +220,7 @@ export class CdkStack extends cdk.Stack {
               "application/json": apigateway.Model.EMPTY_MODEL,
             },
           },
-        ]
+        ],
       },
     );
 
