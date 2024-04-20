@@ -1,16 +1,16 @@
-import React from 'react';
-import Header from '@cloudscape-design/components/header';
-import Link from '@cloudscape-design/components/link';
-import Box from '@cloudscape-design/components/box';
-import { isVisualRefresh } from './../../common/apply-mode';
-import { WidgetConfig } from '../interfaces';
+import React from "react";
+import Header from "@cloudscape-design/components/header";
+import Link from "@cloudscape-design/components/link";
+import Box from "@cloudscape-design/components/box";
+import { isVisualRefresh } from "./../../common/apply-mode";
+import { WidgetConfig } from "../interfaces";
 
 export const interactiveExercises: WidgetConfig = {
   definition: { defaultRowSpan: 3, defaultColumnSpan: 2 },
   data: {
-    icon: 'table',
-    title: 'InteractiveExercises',
-    description: 'Interactive Exercises',
+    icon: "table",
+    title: "InteractiveExercises",
+    description: "Interactive Exercises",
     disableContentPaddings: !isVisualRefresh,
     header: InteractiveExercisesHeader,
     content: InteractiveExercises,
@@ -19,12 +19,7 @@ export const interactiveExercises: WidgetConfig = {
 };
 
 function InteractiveExercisesHeader() {
-  return (
-    <Header
-    >
-      Interactive Exercises
-    </Header>
-  );
+  return <Header>Interactive Exercises</Header>;
 }
 
 function InteractiveExercisesFooter() {
@@ -37,7 +32,4 @@ function InteractiveExercisesFooter() {
   );
 }
 
-export default function InteractiveExercises() {
-}
-
-
+export default function InteractiveExercises() {}

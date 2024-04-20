@@ -4,9 +4,9 @@ import {
   applyDensity,
   disableMotion,
   Density,
-} from '@cloudscape-design/global-styles';
-import '@cloudscape-design/global-styles/index.css';
-import * as localStorage from './localStorage';
+} from "@cloudscape-design/global-styles";
+import "@cloudscape-design/global-styles/index.css";
+import * as localStorage from "./localStorage";
 
 (window as any).disableMotionForTests = disableMotion;
 
@@ -14,11 +14,11 @@ import * as localStorage from './localStorage';
 export const isVisualRefresh = true;
 
 export let currentDensity: Density =
-  localStorage.load('Awsui-Density-Preference') ?? Density.Comfortable;
+  localStorage.load("Awsui-Density-Preference") ?? Density.Comfortable;
 applyDensity(currentDensity);
 
 export function updateDensity(density: string) {
   applyDensity(density as Density);
-  localStorage.save('Awsui-Density-Preference', density);
+  localStorage.save("Awsui-Density-Preference", density);
   currentDensity = density as Density;
 }

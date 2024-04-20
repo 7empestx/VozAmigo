@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import Header from '@cloudscape-design/components/header';
-import Link from '@cloudscape-design/components/link';
-import Box from '@cloudscape-design/components/box';
-import { isVisualRefresh } from './../../common/apply-mode';
-import { WidgetConfig } from '../interfaces';
-import Button from '@cloudscape-design/components/button';
-import config from '../../../../config/environment.json';
-import body from '../../../../config/body.json';
+import React, { useState, useEffect } from "react";
+import Header from "@cloudscape-design/components/header";
+import Link from "@cloudscape-design/components/link";
+import Box from "@cloudscape-design/components/box";
+import { isVisualRefresh } from "./../../common/apply-mode";
+import { WidgetConfig } from "../interfaces";
+import Button from "@cloudscape-design/components/button";
+import config from "../../../../config/environment.json";
+import body from "../../../../config/body.json";
 
 export const assessmentWidget: WidgetConfig = {
   definition: { defaultRowSpan: 3, defaultColumnSpan: 2 },
   data: {
-    icon: 'table',
-    title: 'AssessmentWidget',
-    description: 'Assessment Widget',
+    icon: "table",
+    title: "AssessmentWidget",
+    description: "Assessment Widget",
     disableContentPaddings: !isVisualRefresh,
     header: AssessmentWidgetHeader,
     content: AssessmentWidget,
@@ -25,17 +25,19 @@ const apiKey = process.env.API_KEY as string;
 
 const getQuestionFromGemini = async (userData) => {
   const response = await fetch(config.apiUrl, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
     },
     body: JSON.stringify(body),
   });
 
   if (!response.ok) {
     const errorDetails = await response.text();
-    throw new Error(`API responded with status ${response.status}: ${errorDetails}`);
+    throw new Error(
+      `API responded with status ${response.status}: ${errorDetails}`,
+    );
   }
 
   const questionData = await response.json();
@@ -43,12 +45,7 @@ const getQuestionFromGemini = async (userData) => {
 };
 
 function AssessmentWidgetHeader() {
-  return (
-    <Header
-    >
-      Assessment Widget
-    </Header>
-  );
+  return <Header>Assessment Widget</Header>;
 }
 
 function AssessmentWidgetFooter() {
@@ -67,18 +64,24 @@ export default function AssessmentWidget() {
 
   const fetchNextQuestion = async () => {
     try {
-      const response = await getQuestionFromGemini({ previousResponses: userResponses });
+      const response = await getQuestionFromGemini({
+        previousResponses: userResponses,
+      });
       console.log("Received data:", response); // This will log the full response object
 
       // Parse the JSON string in the body to get the actual data object
       const data = JSON.parse(response.body);
       console.log("Parsed data:", data); // Log the parsed data to ensure it's correct
 
-      const questionPattern = /Question:\s*(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d])/s;
-      const optionsPattern = /\b([a-d])\)\s+(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d]|$)/g;
+      const questionPattern =
+        /Question:\s*(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d])/s;
+      const optionsPattern =
+        /\b([a-d])\)\s+(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d]|$)/g;
 
       const questionMatch = questionPattern.exec(data.message);
-      const questionText = questionMatch ? questionMatch[2].trim() : "Couldn't parse the question.";
+      const questionText = questionMatch
+        ? questionMatch[2].trim()
+        : "Couldn't parse the question.";
 
       const answerOptions = [];
       let match;
@@ -91,7 +94,11 @@ export default function AssessmentWidget() {
 
       if (!questionMatch || answerOptions.length === 0) {
         console.error("Failed to parse the question or options:", data.message);
-        setCurrentQuestion({ questionText: "Failed to parse the question. Please try again or contact support.", answerOptions: [] });
+        setCurrentQuestion({
+          questionText:
+            "Failed to parse the question. Please try again or contact support.",
+          answerOptions: [],
+        });
         return; // Stop further execution if parsing fails
       }
 
@@ -99,13 +106,17 @@ export default function AssessmentWidget() {
         id: Date.now(),
         questionText: questionText,
         answerOptions: answerOptions,
-        correctAnswerId: null // Assuming correct answer handling is done elsewhere
+        correctAnswerId: null, // Assuming correct answer handling is done elsewhere
       };
 
       setCurrentQuestion(questionData);
     } catch (error) {
-      console.error('Failed to fetch or parse question:', error);
-      setCurrentQuestion({ questionText: "Error fetching or parsing question. Please check the network or contact support.", answerOptions: [] });
+      console.error("Failed to fetch or parse question:", error);
+      setCurrentQuestion({
+        questionText:
+          "Error fetching or parsing question. Please check the network or contact support.",
+        answerOptions: [],
+      });
     }
   };
 

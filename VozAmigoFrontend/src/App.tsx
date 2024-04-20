@@ -1,18 +1,18 @@
-import React, { useRef, useState } from 'react';
-import { createRoot } from 'react-dom/client';
+import React, { useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
 
-import { AppLayoutProps } from '@cloudscape-design/components/app-layout';
-import Button from '@cloudscape-design/components/button';
-import ContentLayout from '@cloudscape-design/components/content-layout';
-import Grid from '@cloudscape-design/components/grid';
+import { AppLayoutProps } from "@cloudscape-design/components/app-layout";
+import Button from "@cloudscape-design/components/button";
+import ContentLayout from "@cloudscape-design/components/content-layout";
+import Grid from "@cloudscape-design/components/grid";
 
-import '@cloudscape-design/global-styles/dark-mode-utils.css';
-import './styles/base.scss';
+import "@cloudscape-design/global-styles/dark-mode-utils.css";
+import "./styles/base.scss";
 
-import { DashboardHeader, DashboardMainInfo } from './components/header';
-import { CustomAppLayout } from './commons/common-components';
-import { DashboardSideNavigation } from './components/side-navigation';
-import { Breadcrumbs, Notifications, HelpPanelProvider } from './commons';
+import { DashboardHeader, DashboardMainInfo } from "./components/header";
+import { CustomAppLayout } from "./commons/common-components";
+import { DashboardSideNavigation } from "./components/side-navigation";
+import { Breadcrumbs, Notifications, HelpPanelProvider } from "./commons";
 import {
   BaseStaticWidget,
   personalizedLearningPath,
@@ -21,9 +21,9 @@ import {
   adaptiveFeedback,
   culturalImmersion,
   assessmentWidget,
-} from './widgets';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+} from "./widgets";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
 function WidgetContent() {
   return (
@@ -51,14 +51,8 @@ function WidgetContent() {
 
 function AssessmentContent() {
   return (
-    <Grid
-      gridDefinition={[
-        { colspan: { l: 12, m: 12, default: 12 } },
-      ]}
-    >
-      {[
-        assessmentWidget,
-      ].map((widget, index) => (
+    <Grid gridDefinition={[{ colspan: { l: 12, m: 12, default: 12 } }]}>
+      {[assessmentWidget].map((widget, index) => (
         <BaseStaticWidget key={index} config={widget.data} />
       ))}
     </Grid>
@@ -79,7 +73,9 @@ function App() {
 export default function Main() {
   const location = useLocation();
   const [toolsOpen, setToolsOpen] = useState(false);
-  const [toolsContent, setToolsContent] = useState<React.ReactNode>(() => <DashboardMainInfo />);
+  const [toolsContent, setToolsContent] = useState<React.ReactNode>(() => (
+    <DashboardMainInfo />
+  ));
   const appLayout = useRef<AppLayoutProps.Ref>(null);
 
   const handleToolsContentChange = (content: React.ReactNode) => {
@@ -88,18 +84,37 @@ export default function Main() {
     appLayout.current?.focusToolsClose();
   };
 
-  const contentToRender = location.pathname === '/assessment' ? <AssessmentContent /> : <WidgetContent />;
+  const contentToRender =
+    location.pathname === "/assessment" ? (
+      <AssessmentContent />
+    ) : (
+      <WidgetContent />
+    );
 
   return (
     <HelpPanelProvider value={handleToolsContentChange}>
       <CustomAppLayout
         ref={appLayout}
         content={
-          <ContentLayout header={<DashboardHeader actions={<Button href='https://www.buymeacoffee.com/grantstarkman' target='_blank' variant="primary">Support Voz Amigo</Button>} />}>
+          <ContentLayout
+            header={
+              <DashboardHeader
+                actions={
+                  <Button
+                    href="https://www.buymeacoffee.com/grantstarkman"
+                    target="_blank"
+                    variant="primary"
+                  >
+                    Support Voz Amigo
+                  </Button>
+                }
+              />
+            }
+          >
             {contentToRender}
           </ContentLayout>
         }
-        breadcrumbs={<Breadcrumbs items={[{ text: 'Dashboard', href: '/' }]} />}
+        breadcrumbs={<Breadcrumbs items={[{ text: "Dashboard", href: "/" }]} />}
         navigation={<DashboardSideNavigation />}
         tools={toolsContent}
         toolsOpen={toolsOpen}
@@ -110,4 +125,4 @@ export default function Main() {
   );
 }
 
-createRoot(document.getElementById('app')!).render(<App />);
+createRoot(document.getElementById("app")!).render(<App />);

@@ -1,14 +1,17 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React from 'react';
-import { Container } from '@cloudscape-design/components';
-import { WidgetDataType } from '../interfaces';
-import styles from './styles.module.scss';
+import React from "react";
+import { Container } from "@cloudscape-design/components";
+import { WidgetDataType } from "../interfaces";
+import styles from "./styles.module.scss";
 
 export function BaseStaticWidget({ config }: { config: WidgetDataType }) {
   const Wrapper = config.provider ?? React.Fragment;
   return (
-    <div className={styles.staticWidget} style={{ minHeight: config.staticMinHeight }}>
+    <div
+      className={styles.staticWidget}
+      style={{ minHeight: config.staticMinHeight }}
+    >
       <Wrapper>
         <Container
           header={<config.header />}

@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React from 'react';
-import { Box, SpaceBetween } from '@cloudscape-design/components';
-import styles from './styles.module.scss';
+import React from "react";
+import { Box, SpaceBetween } from "@cloudscape-design/components";
+import styles from "./styles.module.scss";
 
 interface EmptyStateProps {
   icon?: React.ReactNode;
@@ -12,9 +12,19 @@ interface EmptyStateProps {
   action?: React.ReactNode;
 }
 
-export const EmptyState = ({ icon, title, description, action, verticalCenter }: EmptyStateProps) => (
-  <div className={verticalCenter ? styles.verticalCenter : ''}>
-    <Box margin={{ vertical: 'xs' }} textAlign="center" color="text-body-secondary">
+export const EmptyState = ({
+  icon,
+  title,
+  description,
+  action,
+  verticalCenter,
+}: EmptyStateProps) => (
+  <div className={verticalCenter ? styles.verticalCenter : ""}>
+    <Box
+      margin={{ vertical: "xs" }}
+      textAlign="center"
+      color="text-body-secondary"
+    >
       <SpaceBetween size="xxs">
         <div>
           {icon && <div>{icon}</div>}

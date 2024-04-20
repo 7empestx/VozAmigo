@@ -1,8 +1,8 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React from 'react';
-import styles from './styles.module.scss';
-import { useContainerQuery } from '@cloudscape-design/component-toolkit';
+import React from "react";
+import styles from "./styles.module.scss";
+import { useContainerQuery } from "@cloudscape-design/component-toolkit";
 
 interface ResponsiveLayoutProps {
   filters: React.ReactNode;
@@ -10,12 +10,19 @@ interface ResponsiveLayoutProps {
 }
 
 export function ResponsiveLayout({ filters, children }: ResponsiveLayoutProps) {
-  const [width, ref] = useContainerQuery(rect => rect.borderBoxWidth);
+  const [width, ref] = useContainerQuery((rect) => rect.borderBoxWidth);
   const multiColumn = width && width > 480;
   return (
     <div ref={ref} className={styles.root}>
       <div className={styles.filters}>{filters}</div>
-      <div className={[styles.columns, multiColumn ? styles.multi : styles.single].join(' ')}>{children}</div>
+      <div
+        className={[
+          styles.columns,
+          multiColumn ? styles.multi : styles.single,
+        ].join(" ")}
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -28,7 +35,7 @@ interface WidgetLayoutColumnProps {
 
 function WidgetLayoutColumn({ header, children }: WidgetLayoutColumnProps) {
   return (
-    <div className={styles['column-item']}>
+    <div className={styles["column-item"]}>
       {header}
       {children}
     </div>

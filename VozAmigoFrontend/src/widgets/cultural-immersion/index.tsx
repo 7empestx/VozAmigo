@@ -1,16 +1,16 @@
-import React from 'react';
-import Header from '@cloudscape-design/components/header';
-import Link from '@cloudscape-design/components/link';
-import Box from '@cloudscape-design/components/box';
-import { isVisualRefresh } from './../../common/apply-mode';
-import { WidgetConfig } from '../interfaces';
+import React from "react";
+import Header from "@cloudscape-design/components/header";
+import Link from "@cloudscape-design/components/link";
+import Box from "@cloudscape-design/components/box";
+import { isVisualRefresh } from "./../../common/apply-mode";
+import { WidgetConfig } from "../interfaces";
 
 export const culturalImmersion: WidgetConfig = {
   definition: { defaultRowSpan: 3, defaultColumnSpan: 2 },
   data: {
-    icon: 'table',
-    title: 'CulturalImmersion',
-    description: 'Cultural Immersion',
+    icon: "table",
+    title: "CulturalImmersion",
+    description: "Cultural Immersion",
     disableContentPaddings: !isVisualRefresh,
     header: CulturalImmersionHeader,
     content: CulturalImmersion,
@@ -19,12 +19,7 @@ export const culturalImmersion: WidgetConfig = {
 };
 
 function CulturalImmersionHeader() {
-  return (
-    <Header
-    >
-      Cultural Immersion
-    </Header>
-  );
+  return <Header>Cultural Immersion</Header>;
 }
 
 function CulturalImmersionFooter() {
@@ -37,7 +32,4 @@ function CulturalImmersionFooter() {
   );
 }
 
-export default function CulturalImmersion() {
-}
-
-
+export default function CulturalImmersion() {}

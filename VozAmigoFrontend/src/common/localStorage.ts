@@ -1,6 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import { CookieConsent } from './types';
+import { CookieConsent } from "./types";
 
 declare global {
   interface Window {
@@ -9,7 +9,7 @@ declare global {
 }
 
 const hasConsent = () => {
-  if (typeof window.AwsUiConsent === 'undefined') {
+  if (typeof window.AwsUiConsent === "undefined") {
     return false;
   }
 
@@ -31,7 +31,7 @@ export const load = (key: string) => {
     return value && JSON.parse(value);
   } catch (e) {
     console.warn(
-      `⚠️ The ${key} value that is stored in localStorage is incorrect. Try to remove the value ${key} from localStorage and reload the page`
+      `⚠️ The ${key} value that is stored in localStorage is incorrect. Try to remove the value ${key} from localStorage and reload the page`,
     );
     return undefined;
   }

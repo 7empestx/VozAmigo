@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React from 'react';
-import styles from './styles.module.scss';
+import React from "react";
+import styles from "./styles.module.scss";
 
 interface SeparatedListProps {
   ariaLabel?: string;
@@ -9,9 +9,17 @@ interface SeparatedListProps {
   items: Array<React.ReactNode>;
 }
 
-export function SeparatedList({ ariaLabel, ariaLabelledBy, items }: SeparatedListProps) {
+export function SeparatedList({
+  ariaLabel,
+  ariaLabelledBy,
+  items,
+}: SeparatedListProps) {
   return (
-    <ul aria-label={ariaLabel} aria-labelledby={ariaLabelledBy} className={styles.root}>
+    <ul
+      aria-label={ariaLabel}
+      aria-labelledby={ariaLabelledBy}
+      className={styles.root}
+    >
       {items.map((item, index) => (
         <li key={index}>{item}</li>
       ))}

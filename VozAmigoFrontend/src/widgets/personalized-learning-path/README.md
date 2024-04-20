@@ -32,36 +32,43 @@ Creating a visual mockup or a detailed description of the **Initial User Assessm
 ### Initial User Assessment Page Mockup Description
 
 1. **Header Section**:
-    - **Page Title**: "Welcome to Your Spanish Journey"
-    - **Instructions**: Brief instructions telling the user what to expect from the assessment.
+
+   - **Page Title**: "Welcome to Your Spanish Journey"
+   - **Instructions**: Brief instructions telling the user what to expect from the assessment.
 
 2. **Assessment Area**:
-    - A series of interactive questions starting from very basic to more advanced to gauge the user's current level of Spanish.
-    - Question formats can vary, including multiple-choice, fill-in-the-blanks, and simple translations.
-    - For speaking and listening, incorporate audio clips and record user responses.
+
+   - A series of interactive questions starting from very basic to more advanced to gauge the user's current level of Spanish.
+   - Question formats can vary, including multiple-choice, fill-in-the-blanks, and simple translations.
+   - For speaking and listening, incorporate audio clips and record user responses.
 
 3. **Learning Style Survey**:
-    - After the proficiency questions, a short survey asks about learning preferences (visual, auditory, kinesthetic, etc.).
-    - Questions like "Do you prefer learning through stories, games, or quizzes?" help the AI tailor the content.
+
+   - After the proficiency questions, a short survey asks about learning preferences (visual, auditory, kinesthetic, etc.).
+   - Questions like "Do you prefer learning through stories, games, or quizzes?" help the AI tailor the content.
 
 4. **Interactive Features**:
-    - **Progress Bar**: Visible at the top or bottom, showing how many questions are left in the assessment.
-    - **Answer Feedback**: Immediate subtle visual cues indicating if an answer is right or wrong.
+
+   - **Progress Bar**: Visible at the top or bottom, showing how many questions are left in the assessment.
+   - **Answer Feedback**: Immediate subtle visual cues indicating if an answer is right or wrong.
 
 5. **Results and Analysis**:
-    - Upon completion, a summary of results is presented, showing the user's proficiency level and suggested learning style.
-    - A "Get Started" button transitions them to their personalized learning roadmap based on the assessment results.
+
+   - Upon completion, a summary of results is presented, showing the user's proficiency level and suggested learning style.
+   - A "Get Started" button transitions them to their personalized learning roadmap based on the assessment results.
 
 6. **Visual Design Elements**:
-    - **Color and Graphics**: Use of warm, encouraging colors and graphics that reflect Spanish culture.
-    - **Animations**: Light animations when progressing to the next question or upon answering correctly.
+
+   - **Color and Graphics**: Use of warm, encouraging colors and graphics that reflect Spanish culture.
+   - **Animations**: Light animations when progressing to the next question or upon answering correctly.
 
 7. **Footer Section**:
-    - **Support Link**: If users need help or have questions.
-    - **Privacy Note**: A reassurance of the confidentiality of their assessment results.
+
+   - **Support Link**: If users need help or have questions.
+   - **Privacy Note**: A reassurance of the confidentiality of their assessment results.
 
 8. **Responsive Design**:
-    - The page layout adjusts gracefully for mobile and tablet devices, ensuring all interactions remain user-friendly.
+   - The page layout adjusts gracefully for mobile and tablet devices, ensuring all interactions remain user-friendly.
 
 ### Technology and Tools
 

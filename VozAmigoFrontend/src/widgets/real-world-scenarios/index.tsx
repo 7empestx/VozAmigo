@@ -1,16 +1,16 @@
-import React from 'react';
-import Header from '@cloudscape-design/components/header';
-import Link from '@cloudscape-design/components/link';
-import Box from '@cloudscape-design/components/box';
-import { isVisualRefresh } from './../../common/apply-mode';
-import { WidgetConfig } from '../interfaces';
+import React from "react";
+import Header from "@cloudscape-design/components/header";
+import Link from "@cloudscape-design/components/link";
+import Box from "@cloudscape-design/components/box";
+import { isVisualRefresh } from "./../../common/apply-mode";
+import { WidgetConfig } from "../interfaces";
 
 export const realWorldScenarios: WidgetConfig = {
   definition: { defaultRowSpan: 3, defaultColumnSpan: 2 },
   data: {
-    icon: 'table',
-    title: 'RealWorldScenarios',
-    description: 'Real World Scenarios',
+    icon: "table",
+    title: "RealWorldScenarios",
+    description: "Real World Scenarios",
     disableContentPaddings: !isVisualRefresh,
     header: RealWorldScenariosHeader,
     content: RealWorldScenarios,
@@ -19,12 +19,7 @@ export const realWorldScenarios: WidgetConfig = {
 };
 
 function RealWorldScenariosHeader() {
-  return (
-    <Header
-    >
-      Real World Scenarios
-    </Header>
-  );
+  return <Header>Real World Scenarios</Header>;
 }
 
 function RealWorldScenariosFooter() {
@@ -37,7 +32,4 @@ function RealWorldScenariosFooter() {
   );
 }
 
-export default function RealWorldScenarios() {
-}
-
-
+export default function RealWorldScenarios() {}

@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React from 'react';
+import React from "react";
 import {
   Button,
   Header,
   HeaderProps,
   SpaceBetween,
-} from '@cloudscape-design/components';
-import { InfoLink } from './info-link';
+} from "@cloudscape-design/components";
+import { InfoLink } from "./info-link";
 
 interface FullPageHeaderProps extends HeaderProps {
   title?: string;
@@ -18,8 +18,8 @@ interface FullPageHeaderProps extends HeaderProps {
 }
 
 export function FullPageHeader({
-  title = 'Distributions',
-  createButtonText = 'Create distribution',
+  title = "Distributions",
+  createButtonText = "Create distribution",
   extraActions = null,
   selectedItemsCount,
   onInfoLinkClick,
@@ -36,7 +36,8 @@ export function FullPageHeader({
           {extraActions}
           <Button
             data-testid="header-btn-view-details"
-            disabled={!isOnlyOneSelected}>
+            disabled={!isOnlyOneSelected}
+          >
             View details
           </Button>
           <Button data-testid="header-btn-edit" disabled={!isOnlyOneSelected}>
@@ -44,7 +45,8 @@ export function FullPageHeader({
           </Button>
           <Button
             data-testid="header-btn-delete"
-            disabled={selectedItemsCount === 0}>
+            disabled={selectedItemsCount === 0}
+          >
             Delete
           </Button>
           <Button data-testid="header-btn-create" variant="primary">
@@ -52,7 +54,8 @@ export function FullPageHeader({
           </Button>
         </SpaceBetween>
       }
-      {...props}>
+      {...props}
+    >
       {title}
     </Header>
   );

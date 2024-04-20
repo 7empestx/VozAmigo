@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-@use '~@cloudscape-design/design-tokens' as cs;
+@use "~@cloudscape-design/design-tokens" as cs;
 
 .root {
   height: 100%;
@@ -28,7 +28,7 @@
       min-height: 100%;
     }
     & > :last-child:not(:first-child)::after {
-      content: ' ';
+      content: " ";
       position: absolute;
       left: calc(-1 * #{cs.$space-scaled-l});
       height: 100%;

@@ -1,14 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef } from "react";
 
 export default function useContentOrigins() {
   const requestParams = useRef({});
   const [options, setOptions] = useState([]);
-  const [status, setStatus] = useState('finished');
+  const [status, setStatus] = useState("finished");
 
   async function doRequest({ filteringText, currentPageIndex }) {
-    setStatus('loading');
+    setStatus("loading");
     try {
       const { origins, hasNextPage } =
         await window.FakeServer.fetchContentOrigins({
@@ -23,9 +23,9 @@ export default function useContentOrigins() {
       } else {
         setOptions((oldOptions) => [...oldOptions, ...origins]);
       }
-      setStatus(hasNextPage ? 'pending' : 'finished');
+      setStatus(hasNextPage ? "pending" : "finished");
     } catch (error) {
-      setStatus('error');
+      setStatus("error");
     }
   }
 

@@ -1,6 +1,6 @@
-import React from 'react';
-import { HelpPanel, Header } from '@cloudscape-design/components';
-import { ExternalLinkGroup, InfoLink, useHelpPanel } from '../commons';
+import React from "react";
+import { HelpPanel, Header } from "@cloudscape-design/components";
+import { ExternalLinkGroup, InfoLink, useHelpPanel } from "../commons";
 
 export function DashboardMainInfo() {
   return (
@@ -9,14 +9,15 @@ export function DashboardMainInfo() {
       footer={
         <ExternalLinkGroup
           items={[
-            { href: '#', text: '' },
-            { href: '#', text: '' },
-            { href: '#', text: '' },
-            { href: '#', text: '' },
-            { href: '#', text: '' },
+            { href: "#", text: "" },
+            { href: "#", text: "" },
+            { href: "#", text: "" },
+            { href: "#", text: "" },
+            { href: "#", text: "" },
           ]}
         />
-      }>
+      }
+    >
       <p>
         Revolutionize your Spanish learning journey with our innovative
         application designed to provide personalized and interactive language
@@ -40,7 +41,8 @@ export function DashboardHeader({ actions }: { actions: React.ReactNode }) {
           onFollow={() => loadHelpPanelContent(<DashboardMainInfo />)}
         />
       }
-      actions={actions}>
+      actions={actions}
+    >
       Voz Amigo
     </Header>
   );

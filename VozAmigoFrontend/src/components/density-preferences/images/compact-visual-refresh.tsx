@@ -1,11 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
-import React from 'react';
-import { TableRows, TableRow, WindowPath, TopNavigation } from './common';
-import styles from './styles.module.scss';
+import React from "react";
+import { TableRows, TableRow, WindowPath, TopNavigation } from "./common";
+import styles from "./styles.module.scss";
 
 const compactImage = (
-  <svg viewBox="0 0 230 107" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden={true}>
+  <svg
+    viewBox="0 0 230 107"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden={true}
+  >
     <WindowPath />
     <TopNavigation />
     <g className="awsui-context-content-header">

@@ -3,7 +3,7 @@
 export const addToColumnDefinitions = (
   columnDefinitions,
   propertyName,
-  columns
+  columns,
 ) =>
   columnDefinitions.map((colDef) => {
     const column = (columns || []).find((col) => col.id === colDef.id);
@@ -16,7 +16,7 @@ export const addToColumnDefinitions = (
 export const mapWithColumnDefinitionIds = (
   columnDefinitions,
   propertyName,
-  items
+  items,
 ) =>
   columnDefinitions.map(({ id }, i) => ({
     id,

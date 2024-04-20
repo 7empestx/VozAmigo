@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import Header from '@cloudscape-design/components/header';
-import Link from '@cloudscape-design/components/link';
-import Box from '@cloudscape-design/components/box';
-import { isVisualRefresh } from './../../common/apply-mode';
-import { WidgetConfig } from '../interfaces';
+import React, { useState, useEffect } from "react";
+import Header from "@cloudscape-design/components/header";
+import Link from "@cloudscape-design/components/link";
+import Box from "@cloudscape-design/components/box";
+import { isVisualRefresh } from "./../../common/apply-mode";
+import { WidgetConfig } from "../interfaces";
 
 // Simulating a function that checks if the user has completed the assessment
 // In a real application, this might be replaced with a call to your backend
@@ -15,9 +15,10 @@ const hasCompletedAssessment = async () => {
 export const personalizedLearningPath: WidgetConfig = {
   definition: { defaultRowSpan: 3, defaultColumnSpan: 2 },
   data: {
-    icon: 'table',
-    title: 'Personalized Learning Path',
-    description: 'Tailor your Spanish learning journey with a path that adapts to your skills and preferences.',
+    icon: "table",
+    title: "Personalized Learning Path",
+    description:
+      "Tailor your Spanish learning journey with a path that adapts to your skills and preferences.",
     disableContentPaddings: !isVisualRefresh,
     header: PersonalizedLearningPathHeader,
     content: PersonalizedLearningPathContent,
