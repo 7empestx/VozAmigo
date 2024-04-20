@@ -79,7 +79,7 @@ export class CdkStack extends cdk.Stack {
     if (!fs.existsSync(dedicatedDir)) {
       fs.mkdirSync(dedicatedDir);
     }
-    const jsonFilePath = path.join(dedicatedDir, 'config.json');
+    const jsonFilePath = path.join(dedicatedDir, 'environment.json');
     fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2));
 
     new s3deploy.BucketDeployment(this, "DeployVozAmigo", {
