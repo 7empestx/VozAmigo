@@ -26,12 +26,6 @@ jobs:
       - name: Install AWS CDK CLI
         run: npm install -g aws-cdk
 
-      - name: Install Dependencies For API Handler
-        run: |
-          npm install
-          npm install --save-dev @types/node
-        working-directory: cdk/lambda/apiHandler
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
