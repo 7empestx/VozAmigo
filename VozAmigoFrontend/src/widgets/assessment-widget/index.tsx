@@ -5,7 +5,6 @@ import Box from "@cloudscape-design/components/box";
 import { isVisualRefresh } from "./../../common/apply-mode";
 import { WidgetConfig } from "../interfaces";
 import Button from "@cloudscape-design/components/button";
-import config from "../../../public/environment.json";
 import body from "../../../../config/body.json";
 
 export const assessmentWidget: WidgetConfig = {
@@ -23,7 +22,7 @@ export const assessmentWidget: WidgetConfig = {
 
 const apiKey = process.env.API_KEY as string;
 
-const getQuestionFromGemini = async (userData) => {
+const getQuestionFromGemini = async (userData, config) => {
   console.log(config);
   if (config.envrionment === "local") {
     console.log("Fetching question from local API...");
@@ -82,14 +81,34 @@ function AssessmentWidgetFooter() {
 }
 
 export default function AssessmentWidget() {
+  const [config, setConfig] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [userResponses, setUserResponses] = useState([]);
 
+  useEffect(() => {
+    // Fetch the environment configuration dynamically
+    fetch('/environment.json')
+      .then(response => response.json())
+      .then(data => {
+        setConfig(data);
+        console.log("Configuration loaded:", data);
+      })
+      .catch(error => console.error("Failed to load configuration:", error));
+  }, []);
+
+  useEffect(() => {
+    if (config) {
+      fetchNextQuestion();
+    }
+  }, [config]); // This effect runs whenever the config changes
+
   const fetchNextQuestion = async () => {
+    if (!config) return;
+
     try {
       const response = await getQuestionFromGemini({
         previousResponses: userResponses,
-      });
+      }, config);
       console.log("Received data:", response); // This will log the full response object
 
       // Parse the JSON string in the body to get the actual data object
