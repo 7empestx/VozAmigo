@@ -24,7 +24,6 @@ export class CdkStack extends cdk.Stack {
     });
 
     const stage = props.stage;
-    console.log(`Deploying to stage: ${stage}`);
 
     // Specify the ECR repository
     const repository = ecr.Repository.fromRepositoryName(
@@ -34,22 +33,30 @@ export class CdkStack extends cdk.Stack {
     );
 
     // Define the Lambda function
-    const geminiLambdaFunction = new lambda.Function(this, `${stage}-GeminiFunction`, {
-      functionName: `${stage}-gemini-lambda-function`,
-      code: lambda.Code.fromEcrImage(repository, {
-        tag: "latest",
-      }),
-      handler: lambda.Handler.FROM_IMAGE,
-      runtime: lambda.Runtime.FROM_IMAGE,
-      memorySize: 1024,
-      timeout: cdk.Duration.seconds(30),
-    });
+    const geminiLambdaFunction = new lambda.Function(
+      this,
+      `${stage}-GeminiFunction`,
+      {
+        functionName: `${stage}-gemini-lambda-function`,
+        code: lambda.Code.fromEcrImage(repository, {
+          tag: "latest",
+        }),
+        handler: lambda.Handler.FROM_IMAGE,
+        runtime: lambda.Runtime.FROM_IMAGE,
+        memorySize: 1024,
+        timeout: cdk.Duration.seconds(30),
+      },
+    );
 
     // Route 53
     const domainName = "grantstarkman.com";
-    const hostedZone = route53.HostedZone.fromLookup(this, `${stage}-HostedZone`, {
-      domainName: domainName,
-    });
+    const hostedZone = route53.HostedZone.fromLookup(
+      this,
+      `${stage}-HostedZone`,
+      {
+        domainName: domainName,
+      },
+    );
 
     // S3
     const vozAmigoWebsiteBucketName = `${stage}-vozamigo.grantstarkman.com`;
@@ -169,33 +176,42 @@ export class CdkStack extends cdk.Stack {
       ),
     });
 
-    const siteCertificate = new acm.Certificate(this, `${stage}-SiteCertificate`, {
-      domainName: `${stage}.api.vozamigo.grantstarkman.com`,
-      validation: acm.CertificateValidation.fromDns(hostedZone),
-    });
+    const siteCertificate = new acm.Certificate(
+      this,
+      `${stage}-SiteCertificate`,
+      {
+        domainName: `${stage}.api.vozamigo.grantstarkman.com`,
+        validation: acm.CertificateValidation.fromDns(hostedZone),
+      },
+    );
 
     // API Gateway
     const apiDomainName = `${stage}.api.vozamigo.grantstarkman.com`;
-    const api = new apigateway.LambdaRestApi(this, `${stage}.api.vozamigo.grantstarkman.com`, {
-      handler: geminiLambdaFunction,
-      apiKeySourceType: apigateway.ApiKeySourceType.HEADER,
-      domainName: {
-        domainName: apiDomainName,
-        certificate: siteCertificate,
+    const api = new apigateway.LambdaRestApi(
+      this,
+      `${stage}.api.vozamigo.grantstarkman.com`,
+      {
+        handler: geminiLambdaFunction,
+        apiKeySourceType: apigateway.ApiKeySourceType.HEADER,
+        domainName: {
+          domainName: apiDomainName,
+          certificate: siteCertificate,
+        },
+        proxy: false,
+        defaultCorsPreflightOptions: {
+          allowOrigins: ["https://alpha.vozamigo.grantstarkman.com"],
+          allowMethods: apigateway.Cors.ALL_METHODS,
+          allowHeaders: apigateway.Cors.DEFAULT_HEADERS.concat(["x-api-key"]),
+          allowCredentials: true,
+        },
       },
-      proxy: false,
-      defaultCorsPreflightOptions: {
-        allowOrigins: ['https://alpha.vozamigo.grantstarkman.com'],
-        allowMethods: apigateway.Cors.ALL_METHODS,
-        allowHeaders: apigateway.Cors.DEFAULT_HEADERS.concat(["x-api-key"]),
-        allowCredentials: true,
-      },
-    });
+    );
 
     api.addGatewayResponse("Default4xx", {
       type: apigateway.ResponseType.DEFAULT_4XX,
       responseHeaders: {
-        "Access-Control-Allow-Origin": "'https://alpha.vozamigo.grantstarkman.com/'",
+        "Access-Control-Allow-Origin":
+          "'https://alpha.vozamigo.grantstarkman.com/'",
         "Access-Control-Allow-Headers": "'*'",
         "Access-Control-Allow-Methods": "'*'",
       },
