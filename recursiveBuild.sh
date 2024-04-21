@@ -29,6 +29,8 @@ echo "Building the Gemini Docker image..."
 cd Gemini
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 659946347679.dkr.ecr.us-east-1.amazonaws.com
 docker build --platform linux/amd64 -t 659946347679.dkr.ecr.us-east-1.amazonaws.com/gemini:latest .
+
+echo "Pushing the Gemini Docker image to ECR..."
 docker push 659946347679.dkr.ecr.us-east-1.amazonaws.com/gemini:latest
 cd ..
 
@@ -41,6 +43,10 @@ echo "Deploying the CDK stack..."
 cdk deploy --require-approval never
 echo "CDK stack deployed successfully."
 
-aws lambda update-function-code --function-name gemini-lambda-function --image-uri 659946347679.dkr.ecr.us-east-1.amazonaws.com/gemini:latest | cat
+echo "Updating the Lambda function code..."
+aws lambda update-function-code --function-name alpha-gemini-lambda-function --image-uri 659946347679.dkr.ecr.us-east-1.amazonaws.com/gemini:latest | cat
+
+echo "Invalidating the CloudFront cache..."
+aws cloudfront create-invalidation --distribution-id E3TK6V6C124JA9 --paths "/*"
 
 echo "Build and deployment script completed."

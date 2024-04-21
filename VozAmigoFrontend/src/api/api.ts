@@ -23,7 +23,7 @@ export const getQuestionFromGemini = async (userData, config) => {
     const data = JSON.parse(questionData.body);
     return data;
   } else {
-    const response = await fetch("https://api.grantstarkman.com/question", {
+    const response = await fetch(config.apiUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

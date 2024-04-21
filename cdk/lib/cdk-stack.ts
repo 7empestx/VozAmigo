@@ -10,19 +10,21 @@ import * as route53Targets from "aws-cdk-lib/aws-route53-targets";
 import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as fs from "fs";
-import * as os from "os";
 import * as path from "path";
 import * as ecr from "aws-cdk-lib/aws-ecr";
 
+interface CustomStackProps extends cdk.StackProps {
+  stage: string;
+}
+
 export class CdkStack extends cdk.Stack {
-  constructor(scope: Construct, id: string, props?: cdk.StackProps) {
+  constructor(scope: Construct, id: string, props: CustomStackProps) {
     super(scope, id, {
-      env: {
-        account: "659946347679",
-        region: "us-east-1",
-      },
       ...props,
     });
+
+    const stage = props.stage;
+    console.log(`Deploying to stage: ${stage}`);
 
     // Specify the ECR repository
     const repository = ecr.Repository.fromRepositoryName(
@@ -32,8 +34,8 @@ export class CdkStack extends cdk.Stack {
     );
 
     // Define the Lambda function
-    const geminiLambdaFunction = new lambda.Function(this, "GeminiFunction", {
-      functionName: "gemini-lambda-function",
+    const geminiLambdaFunction = new lambda.Function(this, `${stage}-GeminiFunction`, {
+      functionName: `${stage}-gemini-lambda-function`,
       code: lambda.Code.fromEcrImage(repository, {
         tag: "latest",
       }),
@@ -45,12 +47,12 @@ export class CdkStack extends cdk.Stack {
 
     // Route 53
     const domainName = "grantstarkman.com";
-    const hostedZone = route53.HostedZone.fromLookup(this, "HostedZone", {
+    const hostedZone = route53.HostedZone.fromLookup(this, `${stage}-HostedZone`, {
       domainName: domainName,
     });
 
     // S3
-    const vozAmigoWebsiteBucketName = "vozamigo.grantstarkman.com";
+    const vozAmigoWebsiteBucketName = `${stage}-vozamigo.grantstarkman.com`;
     const vozAmigoWebsiteBucket = new s3.Bucket(
       this,
       vozAmigoWebsiteBucketName,
@@ -71,25 +73,28 @@ export class CdkStack extends cdk.Stack {
 
     // Define JSON content and create a temp file
     const jsonData = {
-      environment: "alpha",
-      apiUrl: "https://api.grantstarkman.com/question"
+      environment: stage,
+      apiUrl: "https://alpha.api.vozamigo.grantstarkman.com/question",
     };
 
-    const dedicatedDir = path.join(__dirname, 'tempAssets');
+    const dedicatedDir = path.join(__dirname, "tempAssets");
     if (!fs.existsSync(dedicatedDir)) {
       fs.mkdirSync(dedicatedDir);
     }
-    const jsonFilePath = path.join(dedicatedDir, 'environment.json');
+    const jsonFilePath = path.join(dedicatedDir, "environment.json");
     fs.writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2));
 
-    new s3deploy.BucketDeployment(this, "DeployVozAmigo", {
-      sources: [s3deploy.Source.asset("../VozAmigoFrontend/build"), s3deploy.Source.asset(dedicatedDir)],
+    new s3deploy.BucketDeployment(this, `${stage}-DeployVozAmigo`, {
+      sources: [
+        s3deploy.Source.asset("../VozAmigoFrontend/build"),
+        s3deploy.Source.asset(dedicatedDir),
+      ],
       destinationBucket: vozAmigoWebsiteBucket,
     });
 
     const vozAmigoCloudfrontOAI = new cloudfront.OriginAccessIdentity(
       this,
-      `VozAmigoCloudfrontOAI`,
+      `${stage}-VozAmigoCloudfrontOAI`,
       {
         comment: `OAI for ${vozAmigoWebsiteBucket.bucketName} bucket.`,
       },
@@ -107,15 +112,16 @@ export class CdkStack extends cdk.Stack {
       }),
     );
 
-    const vozAmigoDomainName = "vozamigo.grantstarkman.com";
+    const vozAmigoDomainName = `${stage}.vozamigo.grantstarkman.com`;
     const vozAmigoCloudfrontSiteCertificate = new acm.Certificate(
       this,
-      `VozAmigoCloudfrontSiteCertificate`,
+      `${stage}-VozAmigoCloudfrontSiteCertificate`,
       {
         domainName: vozAmigoDomainName,
         validation: acm.CertificateValidation.fromDns(hostedZone),
       },
     );
+
     const vozAmigoViewerCertificate =
       cloudfront.ViewerCertificate.fromAcmCertificate(
         vozAmigoCloudfrontSiteCertificate,
@@ -123,9 +129,10 @@ export class CdkStack extends cdk.Stack {
           aliases: [vozAmigoDomainName],
         },
       );
+
     const vozAmigoDistribution = new cloudfront.CloudFrontWebDistribution(
       this,
-      `VozAmigoCloudFrontDistribution`,
+      `${stage}-VozAmigoCloudFrontDistribution`,
       {
         originConfigs: [
           {
@@ -153,8 +160,8 @@ export class CdkStack extends cdk.Stack {
       },
     );
 
-    const vozAmigoRecordName = "vozamigo.grantstarkman.com";
-    new route53.ARecord(this, `VozAmigoCloudFrontARecord`, {
+    const vozAmigoRecordName = `${stage}.vozamigo.grantstarkman.com`;
+    new route53.ARecord(this, `${stage}-VozAmigoCloudFrontARecord`, {
       zone: hostedZone,
       recordName: vozAmigoRecordName,
       target: route53.RecordTarget.fromAlias(
@@ -162,14 +169,14 @@ export class CdkStack extends cdk.Stack {
       ),
     });
 
-    const siteCertificate = new acm.Certificate(this, "SiteCertificate", {
-      domainName: "*.grantstarkman.com",
+    const siteCertificate = new acm.Certificate(this, `${stage}-SiteCertificate`, {
+      domainName: `${stage}.api.vozamigo.grantstarkman.com`,
       validation: acm.CertificateValidation.fromDns(hostedZone),
     });
 
     // API Gateway
-    const apiDomainName = "api.grantstarkman.com";
-    const api = new apigateway.LambdaRestApi(this, "api.grantstarkman.com", {
+    const apiDomainName = `${stage}.api.vozamigo.grantstarkman.com`;
+    const api = new apigateway.LambdaRestApi(this, `${stage}.api.vozamigo.grantstarkman.com`, {
       handler: geminiLambdaFunction,
       apiKeySourceType: apigateway.ApiKeySourceType.HEADER,
       domainName: {
@@ -178,7 +185,7 @@ export class CdkStack extends cdk.Stack {
       },
       proxy: false,
       defaultCorsPreflightOptions: {
-        allowOrigins: apigateway.Cors.ALL_ORIGINS,
+        allowOrigins: ['https://alpha.vozamigo.grantstarkman.com'],
         allowMethods: apigateway.Cors.ALL_METHODS,
         allowHeaders: apigateway.Cors.DEFAULT_HEADERS.concat(["x-api-key"]),
         allowCredentials: true,
@@ -188,19 +195,19 @@ export class CdkStack extends cdk.Stack {
     api.addGatewayResponse("Default4xx", {
       type: apigateway.ResponseType.DEFAULT_4XX,
       responseHeaders: {
-        "Access-Control-Allow-Origin": "'*'",
+        "Access-Control-Allow-Origin": "'https://alpha.vozamigo.grantstarkman.com/'",
         "Access-Control-Allow-Headers": "'*'",
         "Access-Control-Allow-Methods": "'*'",
       },
     });
 
-    const apiKey = new apigateway.ApiKey(this, "MyApiKey", {
-      apiKeyName: "MyApiKey",
-      description: "API key for accessing the grantstarkman.com API.",
+    const apiKey = new apigateway.ApiKey(this, "${stage}-api.vozamigo-ApiKey", {
+      apiKeyName: `${stage}-api.vozamigo-ApiKey`,
+      description: `API key for accessing the ${stage} grantstarkman.com API.`,
     });
 
-    const usagePlan = new apigateway.UsagePlan(this, "UsagePlan", {
-      name: "MyUsagePlan",
+    const usagePlan = new apigateway.UsagePlan(this, `${stage}-UsagePlan`, {
+      name: `${stage}-UsagePlan`,
       throttle: {
         rateLimit: 10,
         burstLimit: 20,
@@ -238,7 +245,7 @@ export class CdkStack extends cdk.Stack {
     );
 
     // Route 53 Records
-    new route53.ARecord(this, "APIGatewayARecord", {
+    new route53.ARecord(this, `${stage}-ApiGateway-ARecord`, {
       zone: hostedZone,
       recordName: apiDomainName,
       target: route53.RecordTarget.fromAlias(
