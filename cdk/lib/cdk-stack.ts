@@ -26,10 +26,10 @@ export class CdkStack extends cdk.Stack {
     const stage = props.stage;
 
     // Specify the ECR repository
-    const repository = ecr.Repository.fromRepositoryName(
+    const repository = ecr.Repository.fromRepositoryArn(
       this,
       "GeminiRepository",
-      "gemini",
+      "arn:aws:ecr:us-east-1:659946347679:repository/gemini",
     );
 
     // Define the Lambda function
@@ -58,6 +58,29 @@ export class CdkStack extends cdk.Stack {
       },
     );
 
+    // Route 53
+
+    // import the delegation role by constructing the roleArn
+    /*
+    const delegationRoleArn = this.formatArn({
+      region: '', // IAM is global in each partition
+      service: 'iam',
+      account: '659946347679',
+      resource: 'role',
+      resourceName: 'Route53DelegationRole',
+    });
+    const delegationRole = iam.Role.fromRoleArn(this, 'DelegationRole', delegationRoleArn);
+
+    // create the record
+    new route53.CrossAccountZoneDelegationRecord(this, `${stage}-CrossAccountZoneDelegationRecord`, {
+      delegatedZone: route53.HostedZone.fromHostedZoneAttributes(this, `${stage}-DelegatedZone`, {
+        hostedZoneId: 'Z02660942J8A2F4D19HYD',
+        zoneName: `${stage}-grantstarkman.com`,
+      }),
+      parentHostedZoneName: 'grantstarkman.com',
+      delegationRole,
+    });
+    */
     // S3
     const vozAmigoWebsiteBucketName = `${stage}-vozamigo.grantstarkman.com`;
     const vozAmigoWebsiteBucket = new s3.Bucket(
