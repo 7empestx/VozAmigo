@@ -97,6 +97,7 @@ export class CdkStack extends cdk.Stack {
         comment: `OAI for ${vozAmigoWebsiteBucket.bucketName} bucket.`,
       },
     );
+    vozAmigoWebsiteBucket.grantRead(vozAmigoCloudfrontOAI);
 
     // Add permissions for CloudFront OAI to access the S3 bucket
     vozAmigoWebsiteBucket.addToResourcePolicy(
@@ -118,6 +119,7 @@ export class CdkStack extends cdk.Stack {
       `${stage}-VozAmigoCloudfrontSiteCertificate`,
       {
         domainName: vozAmigoDomainName,
+        certificateName: `${stage}-VozAmigoCloudfrontSiteCertificate`,
         validation: acm.CertificateValidation.fromDns(hostedZone),
       },
     );
@@ -163,7 +165,7 @@ export class CdkStack extends cdk.Stack {
       },
     );
 
-    // Route 53 Records for Cloudfront Distribution
+    // Route 53 Records for Cloudfront Distribution Frontend
     const vozAmigoRecordName = `${stage}.vozamigo.grantstarkman.com`;
     new route53.ARecord(this, `${stage}-VozAmigoCloudFrontARecord`, {
       zone: hostedZone,
@@ -264,7 +266,6 @@ export class CdkStack extends cdk.Stack {
       ],
       description: `Usage plan for the ${stage} grantstarkman.com API.`,
     });
-
     usagePlan.addApiKey(apiKey);
 
     // Define the CORS options
