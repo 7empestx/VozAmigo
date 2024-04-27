@@ -174,6 +174,7 @@ export class CdkStack extends cdk.Stack {
       this,
       `${stage}-VozAmigoCloudFrontDistribution`,
       {
+        comment: `CloudFront distribution for ${vozAmigoWebsiteBucket.bucketName} bucket.`,
         originConfigs: [
           {
             s3OriginSource: {
@@ -281,6 +282,7 @@ export class CdkStack extends cdk.Stack {
       "GET",
       new apigateway.LambdaIntegration(geminiLambdaFunction),
       {
+        apiKeyRequired: true,
         methodResponses: [
           {
             statusCode: "200",
