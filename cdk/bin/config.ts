@@ -5,7 +5,7 @@ export const stageConfig = {
   },
   beta: {
     stage: "beta",
-    env: { account: "659946347679", region: "us-east-1" },
+    env: { account: "058264074723", region: "us-east-1" },
   },
   prod: {
     stage: "prod",

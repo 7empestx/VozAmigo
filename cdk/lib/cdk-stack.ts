@@ -49,14 +49,26 @@ export class CdkStack extends cdk.Stack {
     );
 
     // Route 53
-    const domainName = "grantstarkman.com";
-    const hostedZone = route53.HostedZone.fromLookup(
-      this,
-      `${stage}-HostedZone`,
-      {
-        domainName: domainName,
-      },
-    );
+    let hostedZone: route53.IHostedZone;
+    if (stage === "alpha") {
+      const domainName = "grantstarkman.com";
+      hostedZone = route53.HostedZone.fromLookup(
+        this,
+        `${stage}-HostedZone`,
+        {
+          domainName: domainName,
+        },
+      );
+    } else {
+      hostedZone = route53.HostedZone.fromHostedZoneAttributes(
+        this,
+        `${stage}-HostedZone`,
+        {
+          hostedZoneId: 'Z02660942J8A2F4D19HYD',
+          zoneName: `${stage}-grantstarkman.com`,
+        },
+      );
+    }
 
     // Route 53
 
@@ -74,8 +86,6 @@ export class CdkStack extends cdk.Stack {
     // create the record
     new route53.CrossAccountZoneDelegationRecord(this, `${stage}-CrossAccountZoneDelegationRecord`, {
       delegatedZone: route53.HostedZone.fromHostedZoneAttributes(this, `${stage}-DelegatedZone`, {
-        hostedZoneId: 'Z02660942J8A2F4D19HYD',
-        zoneName: `${stage}-grantstarkman.com`,
       }),
       parentHostedZoneName: 'grantstarkman.com',
       delegationRole,
@@ -222,7 +232,7 @@ export class CdkStack extends cdk.Stack {
         },
         proxy: false,
         defaultCorsPreflightOptions: {
-          allowOrigins: ["https://alpha.vozamigo.grantstarkman.com"],
+          allowOrigins: apigateway.Cors.ALL_ORIGINS,
           allowMethods: apigateway.Cors.ALL_METHODS,
           allowHeaders: apigateway.Cors.DEFAULT_HEADERS.concat(["x-api-key"]),
           allowCredentials: true,
@@ -233,8 +243,7 @@ export class CdkStack extends cdk.Stack {
     api.addGatewayResponse("Default4xx", {
       type: apigateway.ResponseType.DEFAULT_4XX,
       responseHeaders: {
-        "Access-Control-Allow-Origin":
-          "'https://alpha.vozamigo.grantstarkman.com/'",
+        "Access-Control-Allow-Origin": "'*'",
         "Access-Control-Allow-Headers": "'*'",
         "Access-Control-Allow-Methods": "'*'",
       },
