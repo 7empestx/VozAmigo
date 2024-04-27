@@ -113,7 +113,8 @@ export class CdkStack extends cdk.Stack {
     );
 
     // ACM Certificate for Cloudfront Frontend
-    const vozAmigoDomainName = `${stage}.vozamigo.grantstarkman.com`;
+    //const vozAmigoDomainName = `${stage}.vozamigo.grantstarkman.com`;
+    const vozAmigoDomainName = "vozamigo.grantstarkman.com";
     const vozAmigoCloudfrontSiteCertificate = new acm.Certificate(
       this,
       `${stage}-VozAmigoCloudfrontSiteCertificate`,
@@ -166,7 +167,8 @@ export class CdkStack extends cdk.Stack {
     );
 
     // Route 53 Records for Cloudfront Distribution Frontend
-    const vozAmigoRecordName = `${stage}.vozamigo.grantstarkman.com`;
+    //const vozAmigoRecordName = `${stage}.vozamigo.grantstarkman.com`;
+    const vozAmigoRecordName = "vozamigo.grantstarkman.com";
     new route53.ARecord(this, `${stage}-VozAmigoCloudFrontARecord`, {
       zone: hostedZone,
       recordName: vozAmigoRecordName,
@@ -204,7 +206,7 @@ export class CdkStack extends cdk.Stack {
       this,
       `${stage}-ApiCertificate`,
       {
-        domainName: `${stage}.api.vozamigo.grantstarkman.com`,
+        domainName: "*.grantstarkman.com",
         validation: acm.CertificateValidation.fromDns(hostedZone),
       },
     );

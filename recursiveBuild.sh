@@ -47,6 +47,6 @@ echo "Updating the Lambda function code..."
 aws lambda update-function-code --function-name alpha-gemini-lambda-function --image-uri 659946347679.dkr.ecr.us-east-1.amazonaws.com/gemini:latest | cat
 
 echo "Invalidating the CloudFront cache..."
-aws cloudfront create-invalidation --distribution-id E1Z3QNDEWTUO63 --paths "/*"
+aws cloudfront create-invalidation --distribution-id ESZCT217A1VZO --paths "/*"
 
 echo "Build and deployment script completed."
