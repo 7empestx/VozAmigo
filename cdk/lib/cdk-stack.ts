@@ -197,7 +197,7 @@ export class CdkStack extends cdk.Stack {
       memorySize: 1024,
       timeout: cdk.Duration.seconds(30),
       environment: {
-        GEMINI_API_KEY: "AIzaSyBkHDQvuIV13NwZMI3_LkscpDDZUhHkzrQ",
+        GEMINI_API_KEY: "",
       },
       tracing: lambda.Tracing.ACTIVE,
     });
