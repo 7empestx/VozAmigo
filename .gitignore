@@ -1,4 +1,5 @@
 cdk/node_modules
+cdk/.env
 
 VozAmigoFrontend/node_modules
 VozAmigoFrontend/dist
