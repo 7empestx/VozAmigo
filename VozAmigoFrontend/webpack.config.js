@@ -7,7 +7,7 @@ module.exports = {
   entry: "./src/App.tsx",
   output: {
     path: path.resolve(__dirname, "build"),
-    filename: "bundle.js",
+    filename: "[name].[contenthash].js",
   },
   module: {
     rules: [
@@ -42,19 +42,19 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
+      title: "Caching",
       template: "./public/index.html",
+      favicon: "./public/favicon.png",
     }),
     new Dotenv(),
     new CopyPlugin({
-      patterns: [
-        { from: "public/environment.json", to: "" }
-      ],
+      patterns: [{ from: "public/environment.json", to: "" }],
     }),
   ],
   devServer: {
     static: path.join(__dirname, "build"),
     compress: true,
-    port: 3000,
+    port: 3001,
     historyApiFallback: true,
   },
 };

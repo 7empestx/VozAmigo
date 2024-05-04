@@ -41,13 +41,13 @@ export default function AssessmentWidget() {
 
   useEffect(() => {
     // Fetch the environment configuration dynamically
-    fetch('/environment.json')
-      .then(response => response.json())
-      .then(data => {
+    fetch("/environment.json")
+      .then((response) => response.json())
+      .then((data) => {
         setConfig(data);
         console.log("Configuration loaded:", data);
       })
-      .catch(error => console.error("Failed to load configuration:", error));
+      .catch((error) => console.error("Failed to load configuration:", error));
   }, []);
 
   useEffect(() => {
@@ -65,18 +65,25 @@ export default function AssessmentWidget() {
     while (attempts < maxAttempts) {
       attempts++;
       try {
-        const response = await getQuestionFromGemini({
-          previousResponses: userResponses,
-        }, config);
+        const response = await getQuestionFromGemini(
+          {
+            previousResponses: userResponses,
+          },
+          config,
+        );
         console.log("Attempt", attempts, "Received data:", response);
 
         const data = response;
 
-        const questionPattern = /Question:\s*(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d])/s;
-        const optionsPattern = /\b([a-d])\)\s+(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d]|$)/g;
+        const questionPattern =
+          /Question:\s*(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d])/s;
+        const optionsPattern =
+          /\b([a-d])\)\s+(\*\*)?\s*(.+?)\s*(\*\*)?(?=\n[a-d]|$)/g;
 
         const questionMatch = questionPattern.exec(data.message);
-        const questionText = questionMatch ? questionMatch[2].trim() : "Couldn't parse the question.";
+        const questionText = questionMatch
+          ? questionMatch[2].trim()
+          : "Couldn't parse the question.";
 
         const answerOptions = [];
         let match;
@@ -101,10 +108,16 @@ export default function AssessmentWidget() {
           console.error("Parsing failed, retrying...");
         }
       } catch (error) {
-        console.error("Attempt", attempts, "Failed to fetch or parse question:", error);
+        console.error(
+          "Attempt",
+          attempts,
+          "Failed to fetch or parse question:",
+          error,
+        );
         if (attempts >= maxAttempts) {
           setCurrentQuestion({
-            questionText: "Error fetching or parsing question after multiple attempts. Please check the network or contact support.",
+            questionText:
+              "Error fetching or parsing question after multiple attempts. Please check the network or contact support.",
             answerOptions: [],
           });
           return; // Exit the loop after reaching the maximum number of attempts

@@ -44,9 +44,9 @@ cdk deploy --require-approval never
 echo "CDK stack deployed successfully."
 
 echo "Updating the Lambda function code..."
-aws lambda update-function-code --function-name alpha-gemini-lambda-function --image-uri 659946347679.dkr.ecr.us-east-1.amazonaws.com/gemini:latest | cat
+aws lambda update-function-code --function-name gemini-lambda-function --image-uri 659946347679.dkr.ecr.us-east-1.amazonaws.com/gemini:latest | cat
 
 echo "Invalidating the CloudFront cache..."
-aws cloudfront create-invalidation --distribution-id ESZCT217A1VZO --paths "/*"
+aws cloudfront create-invalidation --distribution-id E33QNT9E101G9J --paths "/*" | cat
 
 echo "Build and deployment script completed."

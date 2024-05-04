@@ -41,4 +41,4 @@ export const getQuestionFromGemini = async (userData, config) => {
     const questionData = await response.json();
     return questionData;
   }
-}
+};

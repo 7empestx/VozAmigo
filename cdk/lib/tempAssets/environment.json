@@ -1,4 +1,4 @@
 {
   "environment": "alpha",
-  "apiUrl": "https://alpha.api.vozamigo.grantstarkman.com/question"
+  "apiUrl": "https://api.grantstarkman.com/question"
 }

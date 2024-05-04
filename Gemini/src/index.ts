@@ -42,7 +42,6 @@ export const handler = async (
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
       },
       body: JSON.stringify({
         message: question, // Send the generated question as the response
@@ -54,7 +53,6 @@ export const handler = async (
       headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Credentials": true,
       },
       body: JSON.stringify({
         error: "Error generating the question.",

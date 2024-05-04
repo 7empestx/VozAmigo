@@ -12,6 +12,7 @@ import * as iam from "aws-cdk-lib/aws-iam";
 import * as fs from "fs";
 import * as path from "path";
 import * as ecr from "aws-cdk-lib/aws-ecr";
+import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 
 interface CustomStackProps extends cdk.StackProps {
   stage: string;
@@ -28,28 +29,13 @@ export class CdkStack extends cdk.Stack {
     // Frontend Setup
     // Route53 Records for Site Hosting
     let hostedZone: route53.IHostedZone;
-    if (stage === "alpha") {
-      const domainName = "grantstarkman.com";
-      hostedZone = route53.HostedZone.fromLookup(
-        this,
-        `${stage}-HostedZone`,
-        {
-          domainName: domainName,
-        },
-      );
-    } else {
-      hostedZone = route53.HostedZone.fromHostedZoneAttributes(
-        this,
-        `${stage}-HostedZone`,
-        {
-          hostedZoneId: 'Z02660942J8A2F4D19HYD',
-          zoneName: `${stage}-grantstarkman.com`,
-        },
-      );
-    }
+    const domainName = "grantstarkman.com";
+    hostedZone = route53.HostedZone.fromLookup(this, `${stage}-HostedZone`, {
+      domainName: domainName,
+    });
 
     // S3 Bucket for Website Hosting
-    const vozAmigoWebsiteBucketName = `${stage}-vozamigo.grantstarkman.com`;
+    const vozAmigoWebsiteBucketName = `vozamigo.grantstarkman.com`;
     const vozAmigoWebsiteBucket = new s3.Bucket(
       this,
       vozAmigoWebsiteBucketName,
@@ -71,7 +57,7 @@ export class CdkStack extends cdk.Stack {
     // S3 Deployment - Drop environment.json file into S3 bucket
     const jsonData = {
       environment: stage,
-      apiUrl: "https://alpha.api.vozamigo.grantstarkman.com/question",
+      apiUrl: "https://api.grantstarkman.com/question",
     };
 
     const dedicatedDir = path.join(__dirname, "tempAssets");
@@ -135,41 +121,56 @@ export class CdkStack extends cdk.Stack {
       );
 
     // Cloudfront Distribution for Frontend
-    const vozAmigoDistribution = new cloudfront.CloudFrontWebDistribution(
+    const vozAmigoDistribution = new cloudfront.Distribution(
       this,
-      `${stage}-VozAmigoCloudFrontDistribution`,
+      "VozAmigoDistribution",
       {
         comment: `CloudFront distribution for ${vozAmigoWebsiteBucket.bucketName} bucket.`,
-        originConfigs: [
-          {
-            s3OriginSource: {
-              s3BucketSource: vozAmigoWebsiteBucket,
+        defaultBehavior: {
+          responseHeadersPolicy: new cloudfront.ResponseHeadersPolicy(
+            this,
+            "ResponseHeadersPolicy",
+            {
+              customHeadersBehavior: {
+                customHeaders: [
+                  {
+                    header: "cache-control",
+                    value: "no-store",
+                    override: true,
+                  },
+                ],
+              },
             },
-            behaviors: [{ isDefaultBehavior: true }],
+          ),
+          origin: new origins.S3Origin(vozAmigoWebsiteBucket, {
+            originAccessIdentity: vozAmigoCloudfrontOAI,
+          }),
+
+          viewerProtocolPolicy:
+            cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        },
+        errorResponses: [
+          {
+            httpStatus: 403,
+            responseHttpStatus: 200,
+            responsePagePath: "/index.html",
+          },
+          {
+            httpStatus: 404,
+            responseHttpStatus: 200,
+            responsePagePath: "/index.html",
           },
         ],
-        viewerCertificate: vozAmigoViewerCertificate,
-        errorConfigurations: [
-          {
-            errorCode: 404,
-            responsePagePath: "/index.html",
-            responseCode: 200,
-            errorCachingMinTtl: 300,
-          },
-          {
-            errorCode: 403,
-            responsePagePath: "/index.html",
-            responseCode: 200,
-            errorCachingMinTtl: 300,
-          },
-        ],
+        defaultRootObject: "index.html",
+        domainNames: ["vozamigo.grantstarkman.com"],
+        certificate: vozAmigoCloudfrontSiteCertificate,
       },
     );
 
     // Route 53 Records for Cloudfront Distribution Frontend
     //const vozAmigoRecordName = `${stage}.vozamigo.grantstarkman.com`;
     const vozAmigoRecordName = "vozamigo.grantstarkman.com";
-    new route53.ARecord(this, `${stage}-VozAmigoCloudFrontARecord`, {
+    new route53.ARecord(this, `VozAmigoCloudFrontARecord`, {
       zone: hostedZone,
       recordName: vozAmigoRecordName,
       target: route53.RecordTarget.fromAlias(
@@ -186,114 +187,56 @@ export class CdkStack extends cdk.Stack {
     );
 
     // Gemini Lambda Function
-    const geminiLambdaFunction = new lambda.Function(
-      this,
-      `${stage}-GeminiFunction`,
-      {
-        functionName: `${stage}-gemini-lambda-function`,
-        code: lambda.Code.fromEcrImage(repository, {
-          tag: "latest",
-        }),
-        handler: lambda.Handler.FROM_IMAGE,
-        runtime: lambda.Runtime.FROM_IMAGE,
-        memorySize: 1024,
-        timeout: cdk.Duration.seconds(30),
+    const geminiLambdaFunction = new lambda.Function(this, `GeminiFunction`, {
+      functionName: `gemini-lambda-function`,
+      code: lambda.Code.fromEcrImage(repository, {
+        tag: "latest",
+      }),
+      handler: lambda.Handler.FROM_IMAGE,
+      runtime: lambda.Runtime.FROM_IMAGE,
+      memorySize: 1024,
+      timeout: cdk.Duration.seconds(30),
+      environment: {
+        GEMINI_API_KEY: "AIzaSyBkHDQvuIV13NwZMI3_LkscpDDZUhHkzrQ",
       },
-    );
-
-    // Backend API Certificate for API Gateway
-    const apiCertificate = new acm.Certificate(
-      this,
-      `${stage}-ApiCertificate`,
-      {
-        domainName: "*.grantstarkman.com",
-        validation: acm.CertificateValidation.fromDns(hostedZone),
-      },
-    );
+      tracing: lambda.Tracing.ACTIVE,
+    });
 
     // Lambda Rest API
-    const apiDomainName = `${stage}.api.vozamigo.grantstarkman.com`;
-    const api = new apigateway.LambdaRestApi(
-      this,
-      `${stage}.api.vozamigo.grantstarkman.com`,
-      {
-        handler: geminiLambdaFunction,
-        apiKeySourceType: apigateway.ApiKeySourceType.HEADER,
-        domainName: {
-          domainName: apiDomainName,
-          certificate: apiCertificate,
-        },
-        proxy: false,
-        defaultCorsPreflightOptions: {
-          allowOrigins: apigateway.Cors.ALL_ORIGINS,
-          allowMethods: apigateway.Cors.ALL_METHODS,
-          allowHeaders: apigateway.Cors.DEFAULT_HEADERS.concat(["x-api-key"]),
-          allowCredentials: true,
-        },
+    const apiDomainName = `api.grantstarkman.com`;
+    const api = new apigateway.LambdaRestApi(this, `api.grantstarkman.com`, {
+      handler: geminiLambdaFunction,
+      apiKeySourceType: apigateway.ApiKeySourceType.HEADER,
+      domainName: {
+        domainName: apiDomainName,
+        certificate: acm.Certificate.fromCertificateArn(
+          this,
+          "ApiCertificateArn",
+          "arn:aws:acm:us-east-1:659946347679:certificate/84ad3177-76df-4e35-8130-007428a7ed5e",
+        ),
       },
-    );
-
-    // Add Gateway Responses
-    api.addGatewayResponse("Default4xx", {
-      type: apigateway.ResponseType.DEFAULT_4XX,
-      responseHeaders: {
-        "Access-Control-Allow-Origin": "'*'",
-        "Access-Control-Allow-Headers": "'*'",
-        "Access-Control-Allow-Methods": "'*'",
-      },
+      proxy: false,
     });
-
-    // API Key for API Gateway
-    const apiKey = new apigateway.ApiKey(this, "${stage}-api.vozamigo-ApiKey", {
-      apiKeyName: `${stage}-api.vozamigo-ApiKey`,
-      description: `API key for accessing the ${stage} grantstarkman.com API.`,
-    });
-
-    // Usage Plan for API Gateway
-    const usagePlan = new apigateway.UsagePlan(this, `${stage}-UsagePlan`, {
-      name: `${stage}-UsagePlan`,
-      throttle: {
-        rateLimit: 10,
-        burstLimit: 20,
-      },
-      quota: {
-        limit: 10000,
-        period: apigateway.Period.MONTH,
-      },
-      apiStages: [
-        {
-          api: api,
-          stage: api.deploymentStage,
-        },
-      ],
-      description: `Usage plan for the ${stage} grantstarkman.com API.`,
-    });
-    usagePlan.addApiKey(apiKey);
 
     // Define the CORS options
     const questionResource = api.root.addResource("question");
     questionResource.addMethod(
       "GET",
       new apigateway.LambdaIntegration(geminiLambdaFunction),
-      {
-        methodResponses: [
-          {
-            statusCode: "200",
-            responseModels: {
-              "application/json": apigateway.Model.EMPTY_MODEL,
-            },
-          },
-        ],
-      },
     );
+    questionResource.addCorsPreflight({
+      allowOrigins: ["*"],
+      allowMethods: ["GET"],
+    });
 
     // Route 53 Records
-    new route53.ARecord(this, `${stage}-ApiGateway-ARecord`, {
+    new route53.ARecord(this, `ApiGateway-ARecord`, {
       zone: hostedZone,
       recordName: apiDomainName,
       target: route53.RecordTarget.fromAlias(
         new route53Targets.ApiGateway(api),
       ),
+      deleteExisting: true,
     });
   }
 }
